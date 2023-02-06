@@ -1,24 +1,15 @@
 extern crate sdl2;
 
+pub mod canvas;
+
+use canvas::Canvas;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
-use sdl2::rect::Point;
 use sdl2::EventPump;
 use std::time::Duration;
 
-struct Canvas {
-    canvas: sdl2::render::Canvas<sdl2::video::Window>,
-}
-
-impl Canvas {
-    fn put_pixel(&mut self, x: i32, y: i32, color: Color) {
-        self.canvas.set_draw_color(color);
-        self.canvas.draw_point(Point::new(x, y)).unwrap();
-        self.canvas.present();
-    }
-}
-
+/// Produces a [`Canvas`] and an [`EventPump`]
 fn init_sdl(title: &str, width: u32, height: u32) -> (Canvas, EventPump) {
     let context = sdl2::init().unwrap();
     let video = context.video().unwrap();
@@ -28,27 +19,31 @@ fn init_sdl(title: &str, width: u32, height: u32) -> (Canvas, EventPump) {
         .build()
         .unwrap();
     (
-        Canvas {
-            canvas: window.into_canvas().accelerated().build().unwrap(),
-        },
+        Canvas::new(
+            window.into_canvas().accelerated().build().unwrap(),
+            width as i32,
+            height as i32,
+        ),
         context.event_pump().unwrap(),
     )
 }
 
-const WIDTH: u32 = 1280;
-const HEIGHT: u32 = 720;
-
 fn main() {
-    let (mut canvas, mut event_pump) = init_sdl("Rust SDL2", WIDTH, HEIGHT);
+    let (mut canvas, mut event_pump) = init_sdl("Rust SDL2", 1280, 720);
 
-    let mut i = 0;
+    let mut x = -canvas.width / 2;
+    let mut y = canvas.height / 2;
     'running: loop {
-        canvas.put_pixel(
-            i % WIDTH as i32,
-            i % HEIGHT as i32,
-            Color::RGB(255, 255, 255),
-        );
-        i += 1;
+        canvas.put_pixel(x, y, Color::RGB(255, 255, 255));
+        x += 1;
+        y -= 1;
+
+        if x >= canvas.width / 2 {
+            x -= canvas.width;
+        }
+        if y < -canvas.height / 2 {
+            y += canvas.height;
+        }
 
         for event in event_pump.poll_iter() {
             match event {
