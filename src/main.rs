@@ -1,11 +1,13 @@
 extern crate sdl2;
 
 pub mod canvas;
+pub mod shapes;
 
 use canvas::Canvas;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
+use sdl2::rect::Point;
 use sdl2::EventPump;
 
 /// Produces a [`Canvas`] and an [`EventPump`]
@@ -30,6 +32,12 @@ fn init_sdl(title: &str, width: u32, height: u32) -> (Canvas, EventPump) {
 fn main() {
     let (mut canvas, mut event_pump) = init_sdl("Rust SDL2", 1280, 720);
 
+    let mut theta0 = 0.0f32;
+    let mut theta1 = std::f32::consts::FRAC_PI_2;
+    let mut theta2 = 2.0 * std::f32::consts::FRAC_PI_2;
+    let mut theta3 = 3.0 * std::f32::consts::FRAC_PI_2;
+    let dtheta = 0.01f32;
+    let r = 100.0f32;
     'running: loop {
         for event in event_pump.poll_iter() {
             match event {
@@ -41,5 +49,45 @@ fn main() {
                 _ => {}
             }
         }
+
+        // Rotating square animation
+        canvas.clear(Color::RGB(0, 0, 0));
+        canvas.draw_line(
+            Point::new((r * theta0.cos()) as i32, (r * theta0.sin()) as i32),
+            Point::new((r * theta1.cos()) as i32, (r * theta1.sin()) as i32),
+            Color::RGB(255, 255, 255),
+        );
+        canvas.draw_line(
+            Point::new((r * theta1.cos()) as i32, (r * theta1.sin()) as i32),
+            Point::new((r * theta2.cos()) as i32, (r * theta2.sin()) as i32),
+            Color::RGB(255, 255, 255),
+        );
+        canvas.draw_line(
+            Point::new((r * theta2.cos()) as i32, (r * theta2.sin()) as i32),
+            Point::new((r * theta3.cos()) as i32, (r * theta3.sin()) as i32),
+            Color::RGB(255, 255, 255),
+        );
+        canvas.draw_line(
+            Point::new((r * theta3.cos()) as i32, (r * theta3.sin()) as i32),
+            Point::new((r * theta0.cos()) as i32, (r * theta0.sin()) as i32),
+            Color::RGB(255, 255, 255),
+        );
+        canvas.draw_line(
+            Point::new((r * theta2.cos()) as i32, (r * theta2.sin()) as i32),
+            Point::new((r * theta0.cos()) as i32, (r * theta0.sin()) as i32),
+            Color::RGB(255, 255, 255),
+        );
+        canvas.draw_line(
+            Point::new((r * theta3.cos()) as i32, (r * theta3.sin()) as i32),
+            Point::new((r * theta1.cos()) as i32, (r * theta1.sin()) as i32),
+            Color::RGB(255, 255, 255),
+        );
+        canvas.present();
+        theta0 += dtheta;
+        theta1 += dtheta;
+        theta2 += dtheta;
+        theta3 += dtheta;
+
+        ::std::thread::sleep(std::time::Duration::from_nanos(1_000_000_000u64 / 144));
     }
 }
