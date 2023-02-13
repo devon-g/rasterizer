@@ -45,6 +45,22 @@ impl Canvas {
             .unwrap();
     }
 
+    pub fn interpolate(&mut self, i0: f32, d0: f32, i1: f32, d1: f32) -> Vec<f32> {
+        if i0 == i1 {
+            vec![d0]
+        } else {
+            let mut values = Vec::new();
+            let a = (d1 - d0) / (i1 - i0);
+            let mut d = d0;
+            for _ in (i0 as i32)..=(i1 as i32) {
+                values.push(d);
+                d = d + a;
+            }
+
+            values
+        }
+    }
+
     /// Draws a line of given color between given points.
     ///
     /// Computes y coordinate for each x cordinate using parameterized
@@ -53,32 +69,23 @@ impl Canvas {
     /// Uses floats throughout computation and converts to integer at the end.
     pub fn draw_line(&mut self, mut p0: Point, mut p1: Point, color: Color) {
         // Is there more rise than run?
-        let dx = p1.x - p0.x;
-        let dy = p1.y - p0.y;
-        if dx.abs() > dy.abs() {
+        if (p1.x - p0.x).abs() > (p1.y - p0.y).abs() {
             // Compute y in terms of x so we can draw horizontal lines
-            // p0.x can't be greater than p1.x
             if p0.x > p1.x {
                 (p0, p1) = (p1, p0);
             }
-            // Slope is change in y divided by change in x
-            let a = dy / dx;
-            let mut y = p0.y;
+            let ys = self.interpolate(p0.x, p0.y, p1.x, p1.y);
             for x in (p0.x as i32)..=(p1.x as i32) {
-                self.put_pixel(Point::new(x as f32, y), color);
-                y = y + a;
+                self.put_pixel(Point::new(x as f32, ys[(x - p0.x as i32) as usize]), color);
             }
         } else {
             // Compute x in terms of y so we can draw vertical lines
-            // p0.y can't be greater than p1.y
             if p0.y > p1.y {
                 (p0, p1) = (p1, p0);
             }
-            let a = dx / dy;
-            let mut x = p0.x;
+            let xs = self.interpolate(p0.y, p0.x, p1.y, p1.x);
             for y in (p0.y as i32)..=(p1.y as i32) {
-                self.put_pixel(Point::new(x, y as f32), color);
-                x = x + a;
+                self.put_pixel(Point::new(xs[(y - p0.y as i32) as usize], y as f32), color);
             }
         }
     }
