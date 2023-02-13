@@ -2,6 +2,7 @@ use super::geometry::{Color, Point};
 use super::Drawable;
 use crate::canvas::Canvas;
 
+#[derive(Copy, Clone)]
 struct Rectangle {
     points: [Point; 4],
     center: Point,
@@ -30,7 +31,7 @@ impl Drawable for Rectangle {
         canvas.draw_line(self.points[2], self.points[3], color);
         canvas.draw_line(self.points[3], self.points[0], color);
     }
-    fn get_points(&self) -> Vec<Point> {
-        self.points.to_vec()
-    }
+    // fn get_points(&self) -> Vec<Point> {
+    //     self.points.to_vec()
+    // }
 }

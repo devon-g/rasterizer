@@ -1,5 +1,6 @@
 use crate::shapes::geometry::Color;
 use crate::shapes::geometry::Point;
+use sdl2::video::Window;
 
 /// An SDL2 [`Canvas<Window>`](sdl2::render::Canvas<sdl2::video::Window>) simplified for the book.
 pub struct Canvas {
@@ -9,9 +10,9 @@ pub struct Canvas {
 }
 
 impl Canvas {
-    pub fn new(canvas: sdl2::render::Canvas<sdl2::video::Window>, width: i32, height: i32) -> Self {
+    pub fn new(window: Window, width: i32, height: i32) -> Self {
         Self {
-            canvas,
+            canvas: window.into_canvas().accelerated().build().unwrap(),
             width,
             height,
         }
