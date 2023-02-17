@@ -1,5 +1,5 @@
 pub mod geometry;
-pub mod rectangle;
+//pub mod rectangle;
 
 use crate::canvas::Canvas;
 use geometry::Color;

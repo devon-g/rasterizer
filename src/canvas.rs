@@ -41,11 +41,85 @@ impl Canvas {
             .draw_point(Point::new(
                 (self.width / 2) as f32 + p.x,
                 (self.height / 2) as f32 - p.y,
+                1.0,
             ))
             .unwrap();
     }
 
+    /// Draws gradient triangle
+    ///
+    /// Uses interpolation to determine which pixels to draw and which color
+    /// intensity to use for those pixels (between black and given color).
+    pub fn draw_gradient_triangle(
+        &mut self,
+        mut p0: Point,
+        mut p1: Point,
+        mut p2: Point,
+        color: Color,
+    ) {
+        // Organize points by y level. P0 <= P1 <= P2
+        if p1.y < p0.y {
+            (p0, p1) = (p1, p0);
+        }
+        if p2.y < p0.y {
+            (p0, p2) = (p2, p0);
+        }
+        if p2.y < p1.y {
+            (p1, p2) = (p2, p1);
+        }
+
+        // Compute x's for each row in the triangle
+        let x01 = self.interpolate(p0.y, p0.x, p1.y, p1.x);
+        let h01 = self.interpolate(p0.y, p0.h, p1.y, p1.h);
+
+        let x12 = self.interpolate(p1.y, p1.h, p2.y, p2.h);
+        let h12 = self.interpolate(p1.y, p1.h, p2.y, p2.h);
+
+        let x02 = self.interpolate(p0.y, p0.x, p2.y, p2.x);
+        let h02 = self.interpolate(p0.y, p0.h, p2.y, p2.h);
+
+        // x01 and x12 have a common point so we remove one from x01 and join them
+        let x012 = [&x01[..x01.len() - 1], &x12[..]].concat();
+        let h012 = [&h01[..h01.len() - 1], &h12[..]].concat();
+
+        // Figure out which array is left and which is right
+        let x_left: Vec<f32>;
+        let h_left: Vec<f32>;
+
+        let x_right: Vec<f32>;
+        let h_right: Vec<f32>;
+
+        let m = x02.len() / 2;
+        if x02[m] < x012[m] {
+            x_left = x02;
+            h_left = h02;
+
+            x_right = x012;
+            h_right = h012;
+        } else {
+            x_left = x012;
+            h_left = h012;
+
+            x_right = x02;
+            h_right = h02;
+        }
+
+        for y in (p0.y as i32)..=(p2.y as i32) {
+            let idx = (y - p0.y as i32) as usize;
+            let x_l = x_left[idx];
+            let x_r = x_right[idx];
+
+            let h_segment = self.interpolate(x_l, h_left[idx], x_r, h_right[idx]);
+            for x in (x_l as i32)..=(x_r as i32) {
+                let shaded_color = color * h_segment[(x - x_l as i32) as usize];
+                self.put_pixel(Point::new(x as f32, y as f32, 1.0), shaded_color);
+            }
+        }
+    }
+
     /// Draws filled triangle
+    ///
+    /// Uses interpolation to determine which pixels to draw inside the triangle
     pub fn draw_filled_triangle(
         &mut self,
         mut p0: Point,
@@ -71,6 +145,27 @@ impl Canvas {
 
         // x01 and x12 have a common point so we remove one from x01 and join them
         let x012 = [&x01[..x01.len() - 1], &x12[..]].concat();
+
+        // Figure out which array is left and which is right
+        let x_left: Vec<f32>;
+        let x_right: Vec<f32>;
+        let m = x02.len() / 2;
+        if x02[m] < x012[m] {
+            x_left = x02;
+            x_right = x012;
+        } else {
+            x_left = x012;
+            x_right = x02;
+        }
+
+        for y in (p0.y as i32)..=(p2.y as i32) {
+            let idx = (y - p0.y as i32) as usize;
+            let x_l = x_left[idx];
+            let x_r = x_right[idx];
+            for x in (x_l as i32)..=(x_r as i32) {
+                self.put_pixel(Point::new(x as f32, y as f32, 1.0), color);
+            }
+        }
     }
 
     /// Draws wireframe triangle
@@ -112,7 +207,10 @@ impl Canvas {
             }
             let ys = self.interpolate(p0.x, p0.y, p1.x, p1.y);
             for x in (p0.x as i32)..=(p1.x as i32) {
-                self.put_pixel(Point::new(x as f32, ys[(x - p0.x as i32) as usize]), color);
+                self.put_pixel(
+                    Point::new(x as f32, ys[(x - p0.x as i32) as usize], 1.0),
+                    color,
+                );
             }
         } else {
             // Compute x in terms of y so we can draw vertical lines
@@ -121,7 +219,10 @@ impl Canvas {
             }
             let xs = self.interpolate(p0.y, p0.x, p1.y, p1.x);
             for y in (p0.y as i32)..=(p1.y as i32) {
-                self.put_pixel(Point::new(xs[(y - p0.y as i32) as usize], y as f32), color);
+                self.put_pixel(
+                    Point::new(xs[(y - p0.y as i32) as usize], y as f32, 1.0),
+                    color,
+                );
             }
         }
     }

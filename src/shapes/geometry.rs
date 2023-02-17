@@ -2,11 +2,16 @@
 pub struct Point {
     pub x: f32,
     pub y: f32,
+    pub h: f32,
 }
 
 impl Point {
-    pub fn new(x: f32, y: f32) -> Self {
-        Self { x, y }
+    pub fn new(x: f32, y: f32, h: f32) -> Self {
+        Self {
+            x,
+            y,
+            h: h.clamp(0.0, 1.0),
+        }
     }
 }
 
@@ -14,12 +19,6 @@ impl Into<sdl2::rect::Point> for Point {
     fn into(self) -> sdl2::rect::Point {
         sdl2::rect::Point::new(self.x as i32, self.y as i32)
     }
-}
-
-#[derive(Copy, Clone)]
-pub struct Line {
-    pub p0: Point,
-    pub p1: Point,
 }
 
 #[derive(Copy, Clone)]
@@ -31,7 +30,31 @@ pub struct Color {
 
 impl Color {
     pub fn new(r: u8, g: u8, b: u8) -> Self {
-        Self { r, g, b }
+        Self {
+            r: r.clamp(0, 255),
+            g: g.clamp(0, 255),
+            b: b.clamp(0, 255),
+        }
+    }
+}
+
+impl std::ops::Mul<Color> for f32 {
+    type Output = Color;
+    fn mul(self, mut color: Color) -> Color {
+        color.r = ((color.r as f32) * self) as u8;
+        color.g = ((color.g as f32) * self) as u8;
+        color.b = ((color.b as f32) * self) as u8;
+        color
+    }
+}
+
+impl std::ops::Mul<f32> for Color {
+    type Output = Color;
+    fn mul(mut self, scalar: f32) -> Color {
+        self.r = ((self.r as f32) * scalar) as u8;
+        self.g = ((self.g as f32) * scalar) as u8;
+        self.b = ((self.b as f32) * scalar) as u8;
+        self
     }
 }
 

@@ -46,44 +46,60 @@ fn main() {
             }
         }
 
-        // Rotating square animation
         canvas.clear(Color::new(0, 0, 0));
+
+        // Filled triangle outlined by wireframe triangle
+        canvas.draw_filled_triangle(
+            Point::new(200.0, -250.0, 1.0),
+            Point::new(400.0, 50.0, 1.0),
+            Point::new(20.0, 250.0, 1.0),
+            Color::new(0, 255, 255),
+        );
+        canvas.draw_triangle(
+            Point::new(200.0, -250.0, 1.0),
+            Point::new(400.0, 50.0, 1.0),
+            Point::new(20.0, 250.0, 1.0),
+            Color::new(255, 255, 255),
+        );
+
+        // Gradiant triangle
+        canvas.draw_gradient_triangle(
+            Point::new(0.0, 300.0, 1.0),
+            Point::new(-500.0, -300.0, 0.25),
+            Point::new(500.0, -300.0, 0.0),
+            Color::new(123, 50, 220),
+        );
+
+        // Rotating square animation
         canvas.draw_line(
-            Point::new(r * theta0.cos(), r * theta0.sin()),
-            Point::new(r * theta1.cos(), r * theta1.sin()),
+            Point::new(r * theta0.cos(), r * theta0.sin(), 1.0),
+            Point::new(r * theta1.cos(), r * theta1.sin(), 1.0),
             Color::new(255, 255, 0),
         );
         canvas.draw_line(
-            Point::new(r * theta1.cos(), r * theta1.sin()),
-            Point::new(r * theta2.cos(), r * theta2.sin()),
+            Point::new(r * theta1.cos(), r * theta1.sin(), 1.0),
+            Point::new(r * theta2.cos(), r * theta2.sin(), 1.0),
             Color::new(255, 0, 255),
         );
         canvas.draw_line(
-            Point::new(r * theta2.cos(), r * theta2.sin()),
-            Point::new(r * theta3.cos(), r * theta3.sin()),
+            Point::new(r * theta2.cos(), r * theta2.sin(), 1.0),
+            Point::new(r * theta3.cos(), r * theta3.sin(), 1.0),
             Color::new(0, 255, 255),
         );
         canvas.draw_line(
-            Point::new(r * theta3.cos(), r * theta3.sin()),
-            Point::new(r * theta0.cos(), r * theta0.sin()),
+            Point::new(r * theta3.cos(), r * theta3.sin(), 1.0),
+            Point::new(r * theta0.cos(), r * theta0.sin(), 1.0),
             Color::new(0, 0, 255),
         );
         canvas.draw_line(
-            Point::new(r * theta2.cos(), r * theta2.sin()),
-            Point::new(r * theta0.cos(), r * theta0.sin()),
+            Point::new(r * theta2.cos(), r * theta2.sin(), 1.0),
+            Point::new(r * theta0.cos(), r * theta0.sin(), 1.0),
             Color::new(255, 0, 0),
         );
         canvas.draw_line(
-            Point::new(r * theta3.cos(), r * theta3.sin()),
-            Point::new(r * theta1.cos(), r * theta1.sin()),
+            Point::new(r * theta3.cos(), r * theta3.sin(), 1.0),
+            Point::new(r * theta1.cos(), r * theta1.sin(), 1.0),
             Color::new(0, 255, 0),
-        );
-
-        canvas.draw_triangle(
-            Point::new(-200.0, -250.0),
-            Point::new(200.0, 50.0),
-            Point::new(20.0, 250.0),
-            Color::new(255, 255, 255),
         );
 
         canvas.present();

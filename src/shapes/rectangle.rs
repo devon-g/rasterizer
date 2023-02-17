@@ -13,10 +13,10 @@ impl Rectangle {
     pub fn new(width: f32, height: f32, center: Point, theta: f32) -> Self {
         Self {
             points: [
-                Point::new(-width / 2.0, height / 2.0),
-                Point::new(-width / 2.0, -height / 2.0),
-                Point::new(width / 2.0, height / 2.0),
-                Point::new(width / 2.0, -height / 2.0),
+                Point::new(-width / 2.0, height / 2.0, 1.0),
+                Point::new(-width / 2.0, -height / 2.0, 1.0),
+                Point::new(width / 2.0, height / 2.0, 1.0),
+                Point::new(width / 2.0, -height / 2.0, 1.0),
             ],
             center,
             theta,
