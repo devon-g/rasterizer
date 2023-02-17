@@ -51,33 +51,41 @@ fn main() {
         canvas.draw_line(
             Point::new(r * theta0.cos(), r * theta0.sin()),
             Point::new(r * theta1.cos(), r * theta1.sin()),
-            Color::new(255, 255, 255),
+            Color::new(255, 255, 0),
         );
         canvas.draw_line(
             Point::new(r * theta1.cos(), r * theta1.sin()),
             Point::new(r * theta2.cos(), r * theta2.sin()),
-            Color::new(255, 255, 255),
+            Color::new(255, 0, 255),
         );
         canvas.draw_line(
             Point::new(r * theta2.cos(), r * theta2.sin()),
             Point::new(r * theta3.cos(), r * theta3.sin()),
-            Color::new(255, 255, 255),
+            Color::new(0, 255, 255),
         );
         canvas.draw_line(
             Point::new(r * theta3.cos(), r * theta3.sin()),
             Point::new(r * theta0.cos(), r * theta0.sin()),
-            Color::new(255, 255, 255),
+            Color::new(0, 0, 255),
         );
         canvas.draw_line(
             Point::new(r * theta2.cos(), r * theta2.sin()),
             Point::new(r * theta0.cos(), r * theta0.sin()),
-            Color::new(255, 255, 255),
+            Color::new(255, 0, 0),
         );
         canvas.draw_line(
             Point::new(r * theta3.cos(), r * theta3.sin()),
             Point::new(r * theta1.cos(), r * theta1.sin()),
+            Color::new(0, 255, 0),
+        );
+
+        canvas.draw_triangle(
+            Point::new(-200.0, -250.0),
+            Point::new(200.0, 50.0),
+            Point::new(20.0, 250.0),
             Color::new(255, 255, 255),
         );
+
         canvas.present();
         theta0 += dtheta;
         theta1 += dtheta;

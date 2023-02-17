@@ -45,6 +45,42 @@ impl Canvas {
             .unwrap();
     }
 
+    /// Draws filled triangle
+    pub fn draw_filled_triangle(
+        &mut self,
+        mut p0: Point,
+        mut p1: Point,
+        mut p2: Point,
+        color: Color,
+    ) {
+        // Organize points by y level. P0 <= P1 <= P2
+        if p1.y < p0.y {
+            (p0, p1) = (p1, p0);
+        }
+        if p2.y < p0.y {
+            (p0, p2) = (p2, p0);
+        }
+        if p2.y < p1.y {
+            (p1, p2) = (p2, p1);
+        }
+
+        // Compute x's for each row in the triangle
+        let x01 = self.interpolate(p0.y, p0.x, p1.y, p1.x);
+        let x12 = self.interpolate(p1.y, p1.x, p2.y, p2.x);
+        let x02 = self.interpolate(p0.y, p0.x, p2.y, p2.x);
+
+        // x01 and x12 have a common point so we remove one from x01 and join them
+        let x012 = [&x01[..x01.len() - 1], &x12[..]].concat();
+    }
+
+    /// Draws wireframe triangle
+    pub fn draw_triangle(&mut self, p0: Point, p1: Point, p2: Point, color: Color) {
+        self.draw_line(p0, p1, color);
+        self.draw_line(p1, p2, color);
+        self.draw_line(p2, p0, color);
+    }
+
+    /// Computes set of points between two points
     pub fn interpolate(&mut self, i0: f32, d0: f32, i1: f32, d1: f32) -> Vec<f32> {
         if i0 == i1 {
             vec![d0]
