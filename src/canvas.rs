@@ -1,5 +1,5 @@
 use crate::shapes::geometry::Color;
-use crate::shapes::geometry::Point;
+use crate::shapes::geometry::Point2;
 use sdl2::video::Window;
 
 /// An SDL2 [`Canvas<Window>`](sdl2::render::Canvas<sdl2::video::Window>) simplified for the book.
@@ -34,11 +34,11 @@ impl Canvas {
     /// Converts given coordinates from
     /// "Screen Space" (origin at center, +x left, +y up) to
     /// "Canvas Space" (origin at top left, +x left, +y down)
-    pub fn put_pixel(&mut self, p: Point, color: Color) {
+    pub fn put_pixel(&mut self, p: Point2, color: Color) {
         self.canvas.set_draw_color(color);
         // Convert from textbook screen space to sdl2 canvas space
         self.canvas
-            .draw_point(Point::new(
+            .draw_point(Point2::new(
                 (self.width / 2) as f32 + p.x,
                 (self.height / 2) as f32 - p.y,
                 1.0,
@@ -52,9 +52,9 @@ impl Canvas {
     /// intensity to use for those pixels (between black and given color).
     pub fn draw_gradient_triangle(
         &mut self,
-        mut p0: Point,
-        mut p1: Point,
-        mut p2: Point,
+        mut p0: Point2,
+        mut p1: Point2,
+        mut p2: Point2,
         color: Color,
     ) {
         // Organize points by y level. P0 <= P1 <= P2
@@ -112,7 +112,7 @@ impl Canvas {
             let h_segment = self.interpolate(x_l, h_left[idx], x_r, h_right[idx]);
             for x in (x_l as i32)..=(x_r as i32) {
                 let shaded_color = color * h_segment[(x - x_l as i32) as usize];
-                self.put_pixel(Point::new(x as f32, y as f32, 1.0), shaded_color);
+                self.put_pixel(Point2::new(x as f32, y as f32, 1.0), shaded_color);
             }
         }
     }
@@ -122,9 +122,9 @@ impl Canvas {
     /// Uses interpolation to determine which pixels to draw inside the triangle
     pub fn draw_filled_triangle(
         &mut self,
-        mut p0: Point,
-        mut p1: Point,
-        mut p2: Point,
+        mut p0: Point2,
+        mut p1: Point2,
+        mut p2: Point2,
         color: Color,
     ) {
         // Organize points by y level. P0 <= P1 <= P2
@@ -163,13 +163,13 @@ impl Canvas {
             let x_l = x_left[idx];
             let x_r = x_right[idx];
             for x in (x_l as i32)..=(x_r as i32) {
-                self.put_pixel(Point::new(x as f32, y as f32, 1.0), color);
+                self.put_pixel(Point2::new(x as f32, y as f32, 1.0), color);
             }
         }
     }
 
     /// Draws wireframe triangle
-    pub fn draw_triangle(&mut self, p0: Point, p1: Point, p2: Point, color: Color) {
+    pub fn draw_triangle(&mut self, p0: Point2, p1: Point2, p2: Point2, color: Color) {
         self.draw_line(p0, p1, color);
         self.draw_line(p1, p2, color);
         self.draw_line(p2, p0, color);
@@ -198,7 +198,7 @@ impl Canvas {
     /// line function.
     ///
     /// Uses floats throughout computation and converts to integer at the end.
-    pub fn draw_line(&mut self, mut p0: Point, mut p1: Point, color: Color) {
+    pub fn draw_line(&mut self, mut p0: Point2, mut p1: Point2, color: Color) {
         // Is there more rise than run?
         if (p1.x - p0.x).abs() > (p1.y - p0.y).abs() {
             // Compute y in terms of x so we can draw horizontal lines
@@ -208,7 +208,7 @@ impl Canvas {
             let ys = self.interpolate(p0.x, p0.y, p1.x, p1.y);
             for x in (p0.x as i32)..=(p1.x as i32) {
                 self.put_pixel(
-                    Point::new(x as f32, ys[(x - p0.x as i32) as usize], 1.0),
+                    Point2::new(x as f32, ys[(x - p0.x as i32) as usize], 1.0),
                     color,
                 );
             }
@@ -220,7 +220,7 @@ impl Canvas {
             let xs = self.interpolate(p0.y, p0.x, p1.y, p1.x);
             for y in (p0.y as i32)..=(p1.y as i32) {
                 self.put_pixel(
-                    Point::new(xs[(y - p0.y as i32) as usize], y as f32, 1.0),
+                    Point2::new(xs[(y - p0.y as i32) as usize], y as f32, 1.0),
                     color,
                 );
             }
