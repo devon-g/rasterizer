@@ -169,7 +169,7 @@ impl Canvas {
     }
 
     /// Draws wireframe triangle
-    pub fn draw_triangle(&mut self, p0: Point2, p1: Point2, p2: Point2, color: Color) {
+    pub fn draw_wireframe_triangle(&mut self, p0: Point2, p1: Point2, p2: Point2, color: Color) {
         self.draw_line(p0, p1, color);
         self.draw_line(p1, p2, color);
         self.draw_line(p2, p0, color);

@@ -58,21 +58,23 @@ impl Color {
 
 impl std::ops::Mul<Color> for f32 {
     type Output = Color;
-    fn mul(self, mut color: Color) -> Color {
-        color.r = ((color.r as f32) * self) as u8;
-        color.g = ((color.g as f32) * self) as u8;
-        color.b = ((color.b as f32) * self) as u8;
-        color
+    fn mul(self, color: Color) -> Color {
+        Color::new(
+            ((color.r as f32) * self) as u8,
+            ((color.g as f32) * self) as u8,
+            ((color.b as f32) * self) as u8,
+        )
     }
 }
 
 impl std::ops::Mul<f32> for Color {
     type Output = Color;
-    fn mul(mut self, scalar: f32) -> Color {
-        self.r = ((self.r as f32) * scalar) as u8;
-        self.g = ((self.g as f32) * scalar) as u8;
-        self.b = ((self.b as f32) * scalar) as u8;
-        self
+    fn mul(self, scalar: f32) -> Color {
+        Color::new(
+            ((self.r as f32) * scalar) as u8,
+            ((self.g as f32) * scalar) as u8,
+            ((self.b as f32) * scalar) as u8,
+        )
     }
 }
 
