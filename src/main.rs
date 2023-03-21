@@ -1,8 +1,7 @@
 extern crate sdl2;
 
-pub mod canvas;
-pub mod shapes;
-pub mod viewport;
+mod shapes;
+mod rendering;
 
 use canvas::Canvas;
 use sdl2::event::Event;

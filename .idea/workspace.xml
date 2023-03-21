@@ -10,8 +10,13 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b0a2143b-b6d9-47b1-ae48-2bc767241052" name="Changes" comment="Removed rectangle things">
-      <change beforePath="$PROJECT_DIR$/src/shapes/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/shapes/mod.rs" afterDir="false" />
+    <list default="true" id="b0a2143b-b6d9-47b1-ae48-2bc767241052" name="Changes" comment="Fixed triangle merge conflict">
+      <change afterPath="$PROJECT_DIR$/src/rendering/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/canvas.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/rendering/canvas.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/renderer.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/rendering/renderer.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/rendering/viewport.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,6 +25,13 @@
   </component>
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Rust File" />
+      </list>
+    </option>
   </component>
   <component name="MacroExpansionManager">
     <option name="directoryName" value="meild3rm" />
@@ -31,11 +43,28 @@
     "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/rendering" />
+    </key>
+  </component>
   <component name="RustProjectSettings">
     <option name="toolchainHomeDirectory" value="/usr/bin" />
     <option name="version" value="2" />
   </component>
   <component name="TaskManager">
+    <task id="LOCAL-00001" summary="Fixed triangle merge conflict">
+      <created>1679439247807</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1679439247807</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Fixed triangle merge conflict" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed triangle merge conflict" />
   </component>
 </project>
