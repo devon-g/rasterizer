@@ -1,4 +1,5 @@
 pub mod geometry;
+pub mod triangle;
 //pub mod rectangle;
 
 use crate::canvas::Canvas;
