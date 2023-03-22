@@ -3,14 +3,14 @@ extern crate sdl2;
 mod shapes;
 mod rendering;
 
-use canvas::Canvas;
+use rendering::canvas::Canvas;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::EventPump;
 use shapes::geometry::Color;
 use shapes::geometry::Point2;
 use shapes::geometry::Point3;
-use viewport::Viewport;
+use rendering::viewport::Viewport;
 
 /// Produces a [`Canvas`] and an [`EventPump`]
 fn init_sdl(title: &str, width: u32, height: u32) -> (Canvas, EventPump) {

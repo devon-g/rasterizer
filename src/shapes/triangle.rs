@@ -1,4 +1,4 @@
-use super::geometry::Color;
+use crate::shapes::geometry::Color;
 
 pub struct Triangle {
     pub vertices: [i32; 3],
