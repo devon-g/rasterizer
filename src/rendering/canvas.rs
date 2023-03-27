@@ -1,7 +1,5 @@
 use crate::shapes::geometry::Color;
 use crate::shapes::geometry::Point2;
-use crate::shapes::geometry::Point3;
-use crate::shapes::triangle::Triangle;
 use sdl2::video::Window;
 
 /// An SDL2 [`Canvas<Window>`](sdl2::render::Canvas<sdl2::video::Window>) simplified for the book.
