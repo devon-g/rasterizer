@@ -21,6 +21,7 @@ impl Into<sdl2::rect::Point> for Point2 {
     }
 }
 
+#[derive(Copy, Clone)]
 pub struct Point3 {
     pub x: f32,
     pub y: f32,

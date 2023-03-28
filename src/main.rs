@@ -1,17 +1,17 @@
 extern crate sdl2;
 
+mod color;
+mod models;
 mod rendering;
-mod shapes;
 
-use rendering::canvas::Canvas;
-use rendering::renderer::Renderer;
-use rendering::viewport::Viewport;
-use sdl2::event::Event;
-use sdl2::keyboard::Keycode;
-use sdl2::EventPump;
-use shapes::geometry::Color;
-use shapes::geometry::Point3;
-use crate::shapes::triangle::Triangle;
+use crate::models::geometry::Point3;
+use crate::models::model::{Instance, Model};
+use crate::rendering::canvas::Canvas;
+use crate::rendering::renderer::Renderer;
+use crate::rendering::viewport::Viewport;
+use crate::sdl2::event::Event;
+use crate::sdl2::keyboard::Keycode;
+use crate::sdl2::EventPump;
 
 /// Produces a [`Canvas`] and an [`EventPump`]
 fn init_sdl(title: &str, width: u32, height: u32) -> (Canvas, EventPump) {
@@ -33,47 +33,15 @@ fn main() {
     let vp = Viewport::new(12.80, 7.20, 12.0, &canvas);
     let mut renderer = Renderer::new(canvas, vp);
 
-    let black = Color::new(0, 0, 0);
-    let red = Color::new(255, 0, 0);
-    let green = Color::new(0, 255, 0);
-    let yellow = Color::new(255, 255, 0);
-    let blue = Color::new(0, 0, 255);
-    let cyan = Color::new(0, 255, 255);
-    let _white = Color::new(255, 255, 255);
-    let _grey = Color::new(128, 128, 128);
-    let purple = Color::new(123, 50, 220);
-
     // Prepare canvas with black background
-    renderer.canvas.clear(black);
+    renderer.canvas.clear(color::BLACK);
 
-    // Drawing box object
-    let vertices: Vec<Point3> = vec![
-        Point3::new(1.0, 1.0, 1.0, 1.0),
-        Point3::new(-1.0, 1.0, 1.0, 1.0),
-        Point3::new(-1.0, -1.0, 1.0, 1.0),
-        Point3::new(1.0, -1.0, 1.0, 1.0),
-        Point3::new(1.0, 1.0, -1.0, 1.0),
-        Point3::new(-1.0, 1.0, -1.0, 1.0),
-        Point3::new(-1.0, -1.0, -1.0, 1.0),
-        Point3::new(1.0, -1.0, -1.0, 1.0)
-    ];
+    // Generate default model
+    let cube: Model = models::model::default_cube();
 
-    let triangles: Vec<Triangle> = vec![
-        Triangle::new(0, 1, 2, red),
-        Triangle::new(0, 2, 3, red),
-        Triangle::new(4, 0, 3, green),
-        Triangle::new(4, 3, 7, green),
-        Triangle::new(5, 4, 7, blue),
-        Triangle::new(5, 7, 6, blue),
-        Triangle::new(1, 5, 6, yellow),
-        Triangle::new(1, 6, 2, yellow),
-        Triangle::new(4, 5, 1, purple),
-        Triangle::new(4, 1, 0, purple),
-        Triangle::new(2, 6, 7, cyan),
-        Triangle::new(2, 7, 3, cyan),
-    ];
-
-    renderer.render_object(vertices, triangles);
+    // Create an instance of our model
+    let my_cube: Instance = Instance::new(&cube, Point3::new(0.0, 0.0, 0.0, 1.0));
+    renderer.render_object(&my_cube.model.vertices, &my_cube.model.triangles);
 
     // Show latest buffer and cap at 144 fps
     renderer.canvas.present();

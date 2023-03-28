@@ -2,9 +2,9 @@ use crate::color::Color;
 use crate::models::geometry::Point2;
 use sdl2::video::Window;
 
-/// An SDL2 [`Canvas<Window>`](sdl2::render::Canvas<sdl2::video::Window>) simplified for the book.
+/// An SDL2 [`Canvas<Window>`](sdl2::render::Canvas<Window>) simplified for the book.
 pub struct Canvas {
-    canvas: sdl2::render::Canvas<sdl2::video::Window>,
+    canvas: sdl2::render::Canvas<Window>,
     pub width: i32,
     pub height: i32,
 }
@@ -194,7 +194,7 @@ impl Canvas {
 
     /// Draws a line of given color between given points.
     ///
-    /// Computes y coordinate for each x cordinate using parameterized
+    /// Computes y coordinate for each x coordinate using parameterized
     /// line function.
     ///
     /// Uses floats throughout computation and converts to integer at the end.
