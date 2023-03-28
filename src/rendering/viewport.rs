@@ -1,5 +1,5 @@
+use crate::models::geometry::{Point2, Point3};
 use crate::rendering::canvas::Canvas;
-use crate::shapes::geometry::{Point2, Point3};
 
 pub struct Viewport {
     pub cw: f32,

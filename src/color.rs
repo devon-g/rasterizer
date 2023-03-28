@@ -1,45 +1,4 @@
 #[derive(Copy, Clone)]
-pub struct Point2 {
-    pub x: f32,
-    pub y: f32,
-    pub h: f32,
-}
-
-impl Point2 {
-    pub fn new(x: f32, y: f32, h: f32) -> Point2 {
-        Point2 {
-            x,
-            y,
-            h: h.clamp(0.0, 1.0),
-        }
-    }
-}
-
-impl Into<sdl2::rect::Point> for Point2 {
-    fn into(self) -> sdl2::rect::Point {
-        sdl2::rect::Point::new(self.x as i32, self.y as i32)
-    }
-}
-
-pub struct Point3 {
-    pub x: f32,
-    pub y: f32,
-    pub z: f32,
-    pub h: f32,
-}
-
-impl Point3 {
-    pub fn new(x: f32, y: f32, z: f32, h: f32) -> Point3 {
-        Point3 {
-            x,
-            y,
-            z,
-            h: h.clamp(0.0, 1.0),
-        }
-    }
-}
-
-#[derive(Copy, Clone)]
 pub struct Color {
     pub r: u8,
     pub g: u8,
@@ -83,3 +42,33 @@ impl Into<sdl2::pixels::Color> for Color {
         sdl2::pixels::Color::RGB(self.r, self.g, self.b)
     }
 }
+
+pub static BLACK: Color = Color { r: 0, g: 0, b: 0 };
+pub static RED: Color = Color { r: 255, g: 0, b: 0 };
+pub static GREEN: Color = Color { r: 0, g: 255, b: 0 };
+pub static YELLOW: Color = Color {
+    r: 255,
+    g: 255,
+    b: 0,
+};
+pub static BLUE: Color = Color { r: 0, g: 0, b: 255 };
+pub static CYAN: Color = Color {
+    r: 0,
+    g: 255,
+    b: 255,
+};
+pub static WHITE: Color = Color {
+    r: 255,
+    g: 255,
+    b: 255,
+};
+pub static GRAY: Color = Color {
+    r: 128,
+    g: 128,
+    b: 128,
+};
+pub static PURPLE: Color = Color {
+    r: 123,
+    g: 50,
+    b: 220,
+};

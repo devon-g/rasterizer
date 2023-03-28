@@ -1,7 +1,7 @@
+use crate::models::geometry::{Point2, Point3};
+use crate::models::triangle::Triangle;
 use crate::rendering::canvas::Canvas;
 use crate::rendering::viewport::Viewport;
-use crate::shapes::geometry::{Point2, Point3};
-use crate::shapes::triangle::Triangle;
 
 pub struct Renderer {
     pub canvas: Canvas,
@@ -13,7 +13,7 @@ impl Renderer {
         Renderer { canvas, viewport }
     }
 
-    pub fn render_object(&mut self, vertices: Vec<Point3>, triangles: Vec<Triangle>) {
+    pub fn render_object(&mut self, vertices: &Vec<Point3>, triangles: &Vec<Triangle>) {
         let mut projected: Vec<Point2> = Vec::new();
         // Convert all 3d points into 2d points
         for vertex in vertices {
@@ -25,12 +25,12 @@ impl Renderer {
         }
     }
 
-    pub fn render_triangle(&mut self, triangle: Triangle, projected: &Vec<Point2>) {
+    pub fn render_triangle(&mut self, triangle: &Triangle, projected: &Vec<Point2>) {
         self.canvas.draw_wireframe_triangle(
             projected[triangle.vertices[0] as usize],
             projected[triangle.vertices[1] as usize],
             projected[triangle.vertices[2] as usize],
-            triangle.color
+            triangle.color,
         );
     }
 }
