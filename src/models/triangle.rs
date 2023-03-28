@@ -1,6 +1,6 @@
 use crate::color::Color;
 
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub struct Triangle {
     pub vertices: [i32; 3],
     pub color: Color,

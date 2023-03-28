@@ -28,8 +28,8 @@ impl std::ops::Mul<Color> for f32 {
 
 impl std::ops::Mul<f32> for Color {
     type Output = Color;
-    fn mul(self, scalar: f32) -> Color {
-        Color::new(
+    fn mul(self, scalar: f32) -> Self::Output {
+        Self::Output::new(
             ((self.r as f32) * scalar) as u8,
             ((self.g as f32) * scalar) as u8,
             ((self.b as f32) * scalar) as u8,

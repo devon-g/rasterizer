@@ -39,3 +39,16 @@ impl Point3 {
         }
     }
 }
+
+impl std::ops::Add<Point3> for Point3 {
+    type Output = Point3;
+
+    fn add(self, rhs: Point3) -> Self::Output {
+        Self::Output::new(
+            self.x + rhs.x,
+            self.y + rhs.y,
+            self.z + rhs.z,
+            1.0
+        )
+    }
+}
