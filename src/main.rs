@@ -8,6 +8,7 @@ use crate::models::geometry::Point3;
 use crate::models::model::{Instance, Model};
 use crate::rendering::canvas::Canvas;
 use crate::rendering::renderer::Renderer;
+use crate::rendering::scene::Scene;
 use crate::rendering::viewport::Viewport;
 use crate::sdl2::event::Event;
 use crate::sdl2::keyboard::Keycode;
@@ -33,6 +34,9 @@ fn main() {
     let vp = Viewport::new(12.80, 7.20, 12.0, &canvas);
     let mut renderer = Renderer::new(canvas, vp);
 
+    // We need a scene to hold the models we want to render
+    let mut scene: Scene = Scene::new();
+
     // Prepare canvas with black background
     renderer.canvas.clear(color::BLACK);
 
@@ -40,8 +44,11 @@ fn main() {
     let cube: Model = models::model::default_cube();
 
     // Create an instance of our model
-    let my_cube: Instance = Instance::new(&cube, Point3::new(0.0, 0.0, 0.0, 1.0));
-    renderer.render_object(&my_cube.model.vertices, &my_cube.model.triangles);
+    let my_cube: Instance = Instance::new(&cube, Point3::new(0.0, 0.0, 10.0, 1.0));
+    // Add my instance to the scene and render the scene
+    scene.add_instance(my_cube);
+    renderer.render_scene(scene);
+
 
     // Show latest buffer and cap at 144 fps
     renderer.canvas.present();

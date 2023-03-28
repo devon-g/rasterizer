@@ -1,6 +1,8 @@
 use crate::models::geometry::{Point2, Point3};
+use crate::models::model::Instance;
 use crate::models::triangle::Triangle;
 use crate::rendering::canvas::Canvas;
+use crate::rendering::scene::Scene;
 use crate::rendering::viewport::Viewport;
 
 pub struct Renderer {
@@ -32,5 +34,22 @@ impl Renderer {
             projected[triangle.vertices[2] as usize],
             triangle.color,
         );
+    }
+
+    pub fn render_scene(&mut self, scene: Scene) {
+        for instance in scene.instances {
+            self.render_instance(instance);
+        }
+    }
+
+    pub fn render_instance(&mut self, instance: Instance) {
+        let mut projected: Vec<Point2> = Vec::new();
+        // Convert all 3d points into 2d points
+        for vertex in instance.model.vertices {
+            projected.push(self.viewport.project_vertex(&(vertex + instance.position)));
+        }
+        for triangle in instance.model.triangles {
+            self.render_triangle(&triangle, &projected);
+        }
     }
 }

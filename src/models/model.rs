@@ -2,19 +2,20 @@ use crate::color;
 use crate::models::geometry::Point3;
 use crate::models::triangle::Triangle;
 
+#[derive(Clone)]
 pub struct Model {
     pub vertices: Vec<Point3>,
     pub triangles: Vec<Triangle>,
 }
 
-pub struct Instance<'a> {
-    pub model: &'a Model,
+pub struct Instance {
+    pub model: Model,
     pub position: Point3,
 }
 
-impl<'a> Instance<'a> {
+impl Instance {
     pub fn new(model: &Model, position: Point3) -> Instance {
-        Instance { model, position }
+        Instance { model: model.clone(), position }
     }
 }
 
