@@ -36,20 +36,20 @@ impl Renderer {
         );
     }
 
-    pub fn render_scene(&mut self, scene: Scene) {
-        for instance in scene.instances {
-            self.render_instance(instance);
+    pub fn render_scene(&mut self, scene: &Scene) {
+        for i in 0..scene.instances.len() {
+            self.render_instance(&scene.instances[i]);
         }
     }
 
-    pub fn render_instance(&mut self, instance: Instance) {
+    pub fn render_instance(&mut self, instance: &Instance) {
         let mut projected: Vec<Point2> = Vec::new();
         // Convert all 3d points into 2d points
-        for vertex in instance.model.vertices {
-            projected.push(self.viewport.project_vertex(&(vertex + instance.position)));
+        for i in 0..instance.model.vertices.len() {
+            projected.push(self.viewport.project_vertex(&(instance.model.vertices[i] + instance.position)));
         }
-        for triangle in instance.model.triangles {
-            self.render_triangle(&triangle, &projected);
+        for i in 0..instance.model.triangles.len() {
+            self.render_triangle(&instance.model.triangles[i], &projected);
         }
     }
 }

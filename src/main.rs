@@ -44,10 +44,14 @@ fn main() {
     let cube: Model = models::model::default_cube();
 
     // Create an instance of our model
-    let my_cube: Instance = Instance::new(&cube, Point3::new(0.0, 0.0, 10.0, 1.0));
+    let cube0: Instance = Instance::new(&cube, Point3::new(0.0, 0.0, 10.0, 1.0));
+    let cube1: Instance = Instance::new(&cube, Point3::new(-3.0, 0.0, 10.0, 1.0));
+    let cube2: Instance = Instance::new(&cube, Point3::new(0.0, 3.0, 10.0, 1.0));
     // Add my instance to the scene and render the scene
-    scene.add_instance(my_cube);
-    renderer.render_scene(scene);
+    scene.add_instance(cube0);
+    scene.add_instance(cube1);
+    scene.add_instance(cube2);
+    renderer.render_scene(&scene);
 
 
     // Show latest buffer and cap at 144 fps
