@@ -1,35 +1,42 @@
+use nalgebra::{Affine3, Matrix4, Point3, Rotation3, Scale3, Transform3, Translation, Translation3, Vector3};
 use crate::color;
-use crate::models::geometry::Point3;
 use crate::models::triangle::Triangle;
 
 #[derive(Clone)]
 pub struct Model {
-    pub vertices: Vec<Point3>,
+    pub vertices: Vec<Point3<f32>>,
     pub triangles: Vec<Triangle>,
 }
 
 pub struct Instance {
     pub model: Model,
-    pub position: Point3,
+    scale: Scale3<f32>,
+    rotation: Rotation3<f32>,
+    translation: Translation3<f32>
 }
 
 impl Instance {
-    pub fn new(model: &Model, position: Point3) -> Instance {
-        Instance { model: model.clone(), position }
+    pub fn new(model: &Model, scale: Scale3<f32>, rotation: Rotation3<f32>, translation: Translation3<f32>) -> Instance {
+        Instance {
+            model: model.clone(),
+            scale,
+            rotation,
+            translation
+        }
     }
 }
 
 pub fn default_cube() -> Model {
     Model {
         vertices: vec![
-            Point3::new(1.0, 1.0, 1.0, 1.0),
-            Point3::new(-1.0, 1.0, 1.0, 1.0),
-            Point3::new(-1.0, -1.0, 1.0, 1.0),
-            Point3::new(1.0, -1.0, 1.0, 1.0),
-            Point3::new(1.0, 1.0, -1.0, 1.0),
-            Point3::new(-1.0, 1.0, -1.0, 1.0),
-            Point3::new(-1.0, -1.0, -1.0, 1.0),
-            Point3::new(1.0, -1.0, -1.0, 1.0),
+            Point3::new(1.0, 1.0, 1.0),
+            Point3::new(-1.0, 1.0, 1.0),
+            Point3::new(-1.0, -1.0, 1.0),
+            Point3::new(1.0, -1.0, 1.0),
+            Point3::new(1.0, 1.0, -1.0),
+            Point3::new(-1.0, 1.0, -1.0),
+            Point3::new(-1.0, -1.0, -1.0),
+            Point3::new(1.0, -1.0, -1.0),
         ],
         triangles: vec![
             Triangle::new(0, 1, 2, color::RED),

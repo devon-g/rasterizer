@@ -1,10 +1,11 @@
 extern crate sdl2;
+extern crate nalgebra;
 
 mod color;
 mod models;
 mod rendering;
 
-use crate::models::geometry::Point3;
+use nalgebra::{Point3, Vector3};
 use crate::models::model::{Instance, Model};
 use crate::rendering::canvas::Canvas;
 use crate::rendering::renderer::Renderer;
@@ -44,9 +45,9 @@ fn main() {
     let cube: Model = models::model::default_cube();
 
     // Create an instance of our model
-    let cube0: Instance = Instance::new(&cube, Point3::new(0.0, 0.0, 10.0, 1.0));
-    let cube1: Instance = Instance::new(&cube, Point3::new(-3.0, 0.0, 10.0, 1.0));
-    let cube2: Instance = Instance::new(&cube, Point3::new(0.0, 3.0, 10.0, 1.0));
+    let cube0: Instance = Instance::new(&cube, Vector3::new(0.0, 0.0, 10.0));
+    let cube1: Instance = Instance::new(&cube, Vector3::new(-3.0, 0.0, 10.0));
+    let cube2: Instance = Instance::new(&cube, Vector3::new(0.0, 3.0, 10.0));
     // Add my instance to the scene and render the scene
     scene.add_instance(cube0);
     scene.add_instance(cube1);
