@@ -52,9 +52,12 @@ impl Canvas {
     /// intensity to use for those pixels (between black and given color).
     pub fn draw_gradient_triangle(
         &mut self,
-        mut p0: Point2<f32>, p0h: f32,
-        mut p1: Point2<f32>, p1h: f32,
-        mut p2: Point2<f32>, p2h: f32,
+        mut p0: Point2<f32>,
+        p0h: f32,
+        mut p1: Point2<f32>,
+        p1h: f32,
+        mut p2: Point2<f32>,
+        p2h: f32,
         color: Color,
     ) {
         // Organize points by y level. P0 <= P1 <= P2
@@ -169,7 +172,13 @@ impl Canvas {
     }
 
     /// Draws wireframe triangle
-    pub fn draw_wireframe_triangle(&mut self, p0: Point2<f32>, p1: Point2<f32>, p2: Point2<f32>, color: Color) {
+    pub fn draw_wireframe_triangle(
+        &mut self,
+        p0: Point2<f32>,
+        p1: Point2<f32>,
+        p2: Point2<f32>,
+        color: Color,
+    ) {
         self.draw_line(p0, p1, color);
         self.draw_line(p1, p2, color);
         self.draw_line(p2, p0, color);
@@ -207,10 +216,7 @@ impl Canvas {
             }
             let ys = self.interpolate(p0.x, p0.y, p1.x, p1.y);
             for x in (p0.x as i32)..=(p1.x as i32) {
-                self.put_pixel(
-                    Point2::new(x as f32, ys[(x - p0.x as i32) as usize]),
-                    color,
-                );
+                self.put_pixel(Point2::new(x as f32, ys[(x - p0.x as i32) as usize]), color);
             }
         } else {
             // Compute x in terms of y so we can draw vertical lines
@@ -219,10 +225,7 @@ impl Canvas {
             }
             let xs = self.interpolate(p0.y, p0.x, p1.y, p1.x);
             for y in (p0.y as i32)..=(p1.y as i32) {
-                self.put_pixel(
-                    Point2::new(xs[(y - p0.y as i32) as usize], y as f32),
-                    color,
-                );
+                self.put_pixel(Point2::new(xs[(y - p0.y as i32) as usize], y as f32), color);
             }
         }
     }

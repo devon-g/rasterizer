@@ -1,11 +1,11 @@
-extern crate sdl2;
 extern crate nalgebra;
+extern crate sdl2;
 
 mod color;
 mod models;
 mod rendering;
 
-use nalgebra::{Point3, Vector3};
+use std::rc::Rc;
 use crate::models::model::{Instance, Model};
 use crate::rendering::canvas::Canvas;
 use crate::rendering::renderer::Renderer;
@@ -14,6 +14,7 @@ use crate::rendering::viewport::Viewport;
 use crate::sdl2::event::Event;
 use crate::sdl2::keyboard::Keycode;
 use crate::sdl2::EventPump;
+use nalgebra::{Point3, Rotation3, Scale3, Transform3, Translation3, Vector3};
 
 /// Produces a [`Canvas`] and an [`EventPump`]
 fn init_sdl(title: &str, width: u32, height: u32) -> (Canvas, EventPump) {
@@ -42,18 +43,33 @@ fn main() {
     renderer.canvas.clear(color::BLACK);
 
     // Generate default model
-    let cube: Model = models::model::default_cube();
+    let cube: Rc<Model> = Rc::new(models::model::default_cube());
 
     // Create an instance of our model
-    let cube0: Instance = Instance::new(&cube, Vector3::new(0.0, 0.0, 10.0));
-    let cube1: Instance = Instance::new(&cube, Vector3::new(-3.0, 0.0, 10.0));
-    let cube2: Instance = Instance::new(&cube, Vector3::new(0.0, 3.0, 10.0));
+    let cube0: Instance = Instance::new(
+        Rc::clone(&cube),
+        Scale3::new(1.0, 1.0, 1.0),
+        Rotation3::from_euler_angles(0.0, 0.0, 0.0),
+        Translation3::new(0.0, 0.0, 10.0),
+    );
+    let cube1: Instance = Instance::new(
+        Rc::clone(&cube),
+        Scale3::new(1.0, 1.0, 1.0),
+        Rotation3::from_euler_angles(0.0, 0.0, 0.0),
+        Translation3::new(-3.0, 0.0, 10.0),
+    );
+    let cube2: Instance = Instance::new(
+        Rc::clone(&cube),
+        Scale3::new(1.0, 1.0, 1.0),
+        Rotation3::from_euler_angles(0.0, 0.0, 0.0),
+        Translation3::new(0.0, 3.0, 10.0),
+    );
+
     // Add my instance to the scene and render the scene
     scene.add_instance(cube0);
     scene.add_instance(cube1);
     scene.add_instance(cube2);
     renderer.render_scene(&scene);
-
 
     // Show latest buffer and cap at 144 fps
     renderer.canvas.present();

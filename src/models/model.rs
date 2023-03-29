@@ -1,24 +1,29 @@
-use nalgebra::{Affine3, Matrix4, Point3, Rotation3, Scale3, Transform3, Translation, Translation3, Vector3};
+use std::rc::Rc;
 use crate::color;
 use crate::models::triangle::Triangle;
+use nalgebra::{Point3, Rotation3, Scale3, Translation3};
 
-#[derive(Clone)]
 pub struct Model {
     pub vertices: Vec<Point3<f32>>,
     pub triangles: Vec<Triangle>,
 }
 
 pub struct Instance {
-    pub model: Model,
-    scale: Scale3<f32>,
-    rotation: Rotation3<f32>,
-    translation: Translation3<f32>
+    pub model: Rc<Model>,
+    pub scale: Scale3<f32>,
+    pub rotation: Rotation3<f32>,
+    pub translation: Translation3<f32>,
 }
 
 impl Instance {
-    pub fn new(model: &Model, scale: Scale3<f32>, rotation: Rotation3<f32>, translation: Translation3<f32>) -> Instance {
+    pub fn new(
+        model: Rc<Model>,
+        scale: Scale3<f32>,
+        rotation: Rotation3<f32>,
+        translation: Translation3<f32>,
+    ) -> Instance {
         Instance {
-            model: model.clone(),
+            model,
             scale,
             rotation,
             translation

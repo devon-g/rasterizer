@@ -1,9 +1,9 @@
-use nalgebra::{Point2, Point3};
-use crate::models::model::Instance;
+use crate::models::model::{Instance, Model};
 use crate::models::triangle::Triangle;
 use crate::rendering::canvas::Canvas;
 use crate::rendering::scene::Scene;
 use crate::rendering::viewport::Viewport;
+use nalgebra::{Point2, Point3};
 
 pub struct Renderer {
     pub canvas: Canvas,
@@ -19,7 +19,7 @@ impl Renderer {
         let mut projected: Vec<Point2<f32>> = Vec::new();
         // Convert all 3d points into 2d points
         for vertex in vertices {
-            projected.push(self.viewport.project_vertex(&vertex));
+            projected.push(self.viewport.project_vertex(*vertex));
         }
         // Render the triangles
         for triangle in triangles {
@@ -46,7 +46,10 @@ impl Renderer {
         let mut projected: Vec<Point2<f32>> = Vec::new();
         // Convert all 3d points into 2d points
         for i in 0..instance.model.vertices.len() {
-            projected.push(self.viewport.project_vertex(&(instance.model.vertices[i] + instance.translation)));
+            let transformed_vertex = instance
+                .translation
+                .transform_point(&instance.model.vertices[i]);
+            projected.push(self.viewport.project_vertex(transformed_vertex));
         }
         for i in 0..instance.model.triangles.len() {
             self.render_triangle(&instance.model.triangles[i], &projected);

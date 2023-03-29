@@ -1,5 +1,5 @@
-use nalgebra::{Point2, Point3};
 use crate::rendering::canvas::Canvas;
+use nalgebra::{Point2, Point3};
 
 pub struct Viewport {
     pub cw: f32,
@@ -24,7 +24,7 @@ impl Viewport {
         Point2::new(p.x * (self.cw / self.vw), p.y * (self.ch / self.vh))
     }
 
-    pub fn project_vertex(&self, v: &Point3<f32>) -> Point2<f32> {
+    pub fn project_vertex(&self, v: Point3<f32>) -> Point2<f32> {
         self.viewport_to_canvas(Point2::new(v.x * self.d / v.z, v.y * self.d / v.z))
     }
 }
