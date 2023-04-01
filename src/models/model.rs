@@ -1,6 +1,7 @@
 use crate::color;
 use crate::models::triangle::Triangle;
-use nalgebra::{Point3, Rotation3, Scale3, Transform3, Translation3};
+use nalgebra::{Matrix4, Point3, Rotation3, Scale3, Transform3, Translation3, Vector3};
+use std::f32::consts::PI;
 use std::rc::Rc;
 
 pub struct Model {
@@ -10,77 +11,77 @@ pub struct Model {
 
 pub struct Instance {
     pub model: Rc<Model>,
-    pub scale: Scale3<f32>,
-    pub rotation: Rotation3<f32>,
-    pub translation: Translation3<f32>,
-    pub transformation: Transform3<f32>,
+    scale_xyz: Vector3<f32>,
+    rotation_xyz: Vector3<f32>,
+    translation_xyz: Vector3<f32>,
+    transformation: Transform3<f32>,
 }
 
 impl Instance {
     pub fn new(
         model: Rc<Model>,
-        scale: Scale3<f32>,
-        rotation: Rotation3<f32>,
-        translation: Translation3<f32>,
+        scale_xyz: Vector3<f32>,
+        rotation_xyz: Vector3<f32>,
+        translation_xyz: Vector3<f32>,
     ) -> Instance {
-        Instance {
+        let mut instance: Instance = Instance {
             model,
-            scale,
-            rotation,
-            translation,
-            transformation: Transform3::from_matrix_unchecked(
-                rotation
-                    .inverse()
-                    .to_homogeneous()
-                    .prepend_nonuniform_scaling(&scale.vector)
-                    .append_translation(&translation.vector),
-            ),
-        }
+            scale_xyz,
+            rotation_xyz,
+            translation_xyz,
+            transformation: Transform3::identity(),
+        };
+
+        return instance;
     }
 
-    pub fn set_scale(&mut self, new_scale: Scale3<f32>) {
-        self.scale = new_scale;
-        self.transformation = Transform3::from_matrix_unchecked(
-            self.rotation
-                .inverse()
-                .to_homogeneous()
-                .prepend_nonuniform_scaling(&new_scale.vector)
-                .append_translation(&self.translation.vector),
+    fn build_transform(&mut self) {
+        Transform3::from_matrix_unchecked(
+            Matrix4::new_translation(&self.translation_xyz)
+                * Matrix4::from_axis_angle(&Vector3::<f32>::z_axis(), self.rotation_xyz[2])
+                * Matrix4::from_axis_angle(&Vector3::<f32>::y_axis(), self.rotation_xyz[1])
+                * Matrix4::from_axis_angle(&Vector3::<f32>::x_axis(), self.rotation_xyz[0])
+                * Matrix4::new_nonuniform_scaling(&self.scale_xyz),
         );
     }
 
-    pub fn set_rotation(&mut self, new_rotation: Rotation3<f32>) {
+    pub fn get_scale(&self) -> Vector3<f32> {
+        return self.scale_xyz;
+    }
+
+    pub fn set_scale(&mut self, new_scale: Vector3<f32> ) {
+        self.scale_xyz = new_scale;
+        self.build_transform();
+    }
+
+    pub fn get_rotation(&self) -> Vector3<f32>{
+        return self.rotation_xyz;
+    }
+
+    pub fn set_rotation(&mut self, new_rotation: Mat4) {
         self.rotation = new_rotation;
-        self.rebuild_transformation();
     }
 
-    pub fn set_translation(&mut self, new_translation: Translation3<f32>) {
+    pub fn get_translation(&self) -> Vec3 {
+        return self.translation_xyz;
+    }
+
+    pub fn set_translation(&mut self, new_translation: Mat4) {
         self.translation = new_translation;
-        self.rebuild_transformation();
-    }
-
-    fn rebuild_transformation(&mut self) {
-        self.transformation = Transform3::from_matrix_unchecked(
-            self.rotation
-                .inverse()
-                .to_homogeneous()
-                .prepend_nonuniform_scaling(&self.scale.vector)
-                .append_translation(&self.translation.vector),
-        )
     }
 }
 
 pub fn default_cube() -> Model {
     Model {
         vertices: vec![
-            Point3::new(1.0, 1.0, 1.0),
-            Point3::new(-1.0, 1.0, 1.0),
-            Point3::new(-1.0, -1.0, 1.0),
-            Point3::new(1.0, -1.0, 1.0),
-            Point3::new(1.0, 1.0, -1.0),
-            Point3::new(-1.0, 1.0, -1.0),
-            Point3::new(-1.0, -1.0, -1.0),
-            Point3::new(1.0, -1.0, -1.0),
+            Vec3::new(1.0, 1.0, 1.0),
+            Vec3::new(-1.0, 1.0, 1.0),
+            Vec3::new(-1.0, -1.0, 1.0),
+            Vec3::new(1.0, -1.0, 1.0),
+            Vec3::new(1.0, 1.0, -1.0),
+            Vec3::new(-1.0, 1.0, -1.0),
+            Vec3::new(-1.0, -1.0, -1.0),
+            Vec3::new(1.0, -1.0, -1.0),
         ],
         triangles: vec![
             Triangle::new(0, 1, 2, color::RED),

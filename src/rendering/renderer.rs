@@ -3,7 +3,7 @@ use crate::models::triangle::Triangle;
 use crate::rendering::canvas::Canvas;
 use crate::rendering::scene::Scene;
 use crate::rendering::viewport::Viewport;
-use nalgebra::{Point2, Point3};
+use nalgebra_glm::{Mat4, Vec2, Vec3};
 
 pub struct Renderer {
     pub canvas: Canvas,
@@ -15,8 +15,8 @@ impl Renderer {
         Renderer { canvas, viewport }
     }
 
-    pub fn render_object(&mut self, vertices: &Vec<Point3<f32>>, triangles: &Vec<Triangle>) {
-        let mut projected: Vec<Point2<f32>> = Vec::new();
+    pub fn render_object(&mut self, vertices: &Vec<Vec3>, triangles: &Vec<Triangle>) {
+        let mut projected: Vec<Vec2> = Vec::new();
         // Convert all 3d points into 2d points
         for vertex in vertices {
             projected.push(self.viewport.project_vertex(*vertex));
@@ -27,7 +27,7 @@ impl Renderer {
         }
     }
 
-    pub fn render_triangle(&mut self, triangle: &Triangle, projected: &Vec<Point2<f32>>) {
+    pub fn render_triangle(&mut self, triangle: &Triangle, projected: &Vec<Vec2>) {
         self.canvas.draw_wireframe_triangle(
             projected[triangle.vertices[0] as usize],
             projected[triangle.vertices[1] as usize],
@@ -43,17 +43,24 @@ impl Renderer {
     }
 
     pub fn render_instance(&mut self, instance: &Instance) {
-        let mut projected: Vec<Point2<f32>> = Vec::new();
+        let mut projected: Vec<Vec2> = Vec::new();
         // Convert all 3d points into 2d points
+        let ultimate_transform: Mat4 = self.viewport.rotation
+            * self.viewport.translation.try_inverse().unwrap()
+            * instance.translation
+            * instance.rotation
+            * instance.scale;
         for i in 0..instance.model.vertices.len() {
-            let mut transformed_vertex = instance
-                .transformation
-                .transform_point(&instance.model.vertices[i]);
-            transformed_vertex = self
-                .viewport
-                .transformation
-                .transform_point(&transformed_vertex);
-            projected.push(self.viewport.project_vertex(transformed_vertex));
+            projected.push(
+                //self.viewport.project_vertex(Vec3::from(
+                //    ultimate_transform
+                //        .transform_point(&Point3::from(instance.model.vertices[i]))
+                //        .coords,
+                //)),
+                self.viewport.project_vertex(
+                    ultimate_transform.transform_vector(&instance.model.vertices[i]),
+                ),
+            );
         }
         for i in 0..instance.model.triangles.len() {
             self.render_triangle(&instance.model.triangles[i], &projected);

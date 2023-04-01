@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-extern crate nalgebra;
+extern crate nalgebra_glm;
 extern crate sdl2;
 
 mod color;
@@ -15,7 +15,7 @@ use crate::rendering::viewport::Viewport;
 use crate::sdl2::event::Event;
 use crate::sdl2::keyboard::Keycode;
 use crate::sdl2::EventPump;
-use nalgebra::{Rotation3, Scale3, Translation3, Vector3};
+use nalgebra_glm::{Mat4, Vec3};
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -36,13 +36,18 @@ fn init_sdl(title: &str, width: u32, height: u32) -> (Canvas, EventPump) {
 }
 
 fn move_camera(viewport: &mut Viewport, dx: f32, dy: f32, dz: f32) {
-    viewport.set_translation(Translation3::from(
-        viewport.translation.vector
+    viewport.set_translation(
+        viewport.get_translation()
             + viewport
                 .rotation
-                .inverse()
-                .transform_vector(&Vector3::new(-dx, dy, -dz)),
-    ));
+                .try_inverse()
+                .unwrap()
+                .transform_vector(&Vec3::new(dx, dy, dz)),
+    );
+}
+
+fn rotate_camera(viewport: &mut Viewport, dthetax: f32, dthetay: f32, dthetaz: f32) {
+    viewport.set_rotation(viewport.get_rotation() + Vec3::new(dthetax, dthetay, dthetaz));
 }
 
 fn main() {
@@ -59,9 +64,9 @@ fn main() {
     // Create an instance of our model
     let cube0: Rc<RefCell<Instance>> = Rc::new(RefCell::new(Instance::new(
         Rc::clone(&cube),
-        Scale3::new(1.0, 1.0, 1.0),
-        Rotation3::from_euler_angles(0.0, 0.0, 0.0),
-        Translation3::new(0.0, 0.0, 10.0),
+        Vec3::new(1.0, 1.0, 1.0),
+        Vec3::new(0.0, 0.0, 0.0),
+        Vec3::new(0.0, 0.0, 10.0),
     )));
 
     // Add my instance to the scene and render the scene
@@ -70,25 +75,38 @@ fn main() {
     let mut roll = 10.0;
 
     let mut pressed: HashMap<Keycode, bool> = HashMap::new();
-    pressed.insert(Keycode::W, false);
-    pressed.insert(Keycode::A, false);
-    pressed.insert(Keycode::S, false);
-    pressed.insert(Keycode::D, false);
 
     'running: loop {
         for event in event_pump.poll_iter() {
             match event {
                 Event::KeyDown { keycode, .. } => match keycode.unwrap() {
-                    Keycode::W | Keycode::A | Keycode::S | Keycode::D => {
-                        *pressed.get_mut(&keycode.unwrap()).unwrap() = true;
+                    Keycode::W
+                    | Keycode::A
+                    | Keycode::S
+                    | Keycode::D
+                    | Keycode::Up
+                    | Keycode::Down
+                    | Keycode::Left
+                    | Keycode::Right
+                    | Keycode::Space
+                    | Keycode::LShift => {
+                        pressed.insert(keycode.unwrap(), true);
                     }
-                    Keycode::Up | Keycode::Down | Keycode::Left | Keycode::Right => {}
                     Keycode::Escape => break 'running,
                     _ => {}
                 },
                 Event::KeyUp { keycode, .. } => match keycode.unwrap() {
-                    Keycode::W | Keycode::A | Keycode::S | Keycode::D => {
-                        *pressed.get_mut(&keycode.unwrap()).unwrap() = false;
+                    Keycode::W
+                    | Keycode::A
+                    | Keycode::S
+                    | Keycode::D
+                    | Keycode::Up
+                    | Keycode::Down
+                    | Keycode::Left
+                    | Keycode::Right
+                    | Keycode::Space
+                    | Keycode::LShift => {
+                        pressed.insert(keycode.unwrap(), false);
                     }
                     _ => {}
                 },
@@ -97,17 +115,37 @@ fn main() {
             }
         }
 
-        if pressed[&Keycode::W] {
+        // Camera translation control
+        if pressed.contains_key(&Keycode::W) && pressed[&Keycode::W] {
             move_camera(&mut renderer.viewport, 0.0, 0.0, 0.1);
         }
-        if pressed[&Keycode::A] {
+        if pressed.contains_key(&Keycode::A) && pressed[&Keycode::A] {
             move_camera(&mut renderer.viewport, -0.1, 0.0, 0.0);
         }
-        if pressed[&Keycode::S] {
+        if pressed.contains_key(&Keycode::S) && pressed[&Keycode::S] {
             move_camera(&mut renderer.viewport, 0.0, 0.0, -0.1);
         }
-        if pressed[&Keycode::D] {
+        if pressed.contains_key(&Keycode::D) && pressed[&Keycode::D] {
             move_camera(&mut renderer.viewport, 0.1, 0.0, 0.0);
+        }
+        if pressed.contains_key(&Keycode::Space) && pressed[&Keycode::Space] {
+            move_camera(&mut renderer.viewport, 0.0, 0.1, 0.0);
+        }
+        if pressed.contains_key(&Keycode::LShift) && pressed[&Keycode::LShift] {
+            move_camera(&mut renderer.viewport, 0.0, -0.1, 0.0);
+        }
+        // Camera rotation control
+        if pressed.contains_key(&Keycode::Up) && pressed[&Keycode::Up] {
+            rotate_camera(&mut renderer.viewport, 0.02, 0.0, 0.0);
+        }
+        if pressed.contains_key(&Keycode::Down) && pressed[&Keycode::Down] {
+            rotate_camera(&mut renderer.viewport, -0.02, 0.0, 0.0);
+        }
+        if pressed.contains_key(&Keycode::Left) && pressed[&Keycode::Left] {
+            rotate_camera(&mut renderer.viewport, 0.0, 0.02, 0.0);
+        }
+        if pressed.contains_key(&Keycode::Right) && pressed[&Keycode::Right] {
+            rotate_camera(&mut renderer.viewport, 0.0, -0.02, 0.0);
         }
 
         // Animate things
@@ -115,11 +153,6 @@ fn main() {
         //    .borrow_mut()
         //    .set_rotation(Rotation3::from_euler_angles(roll, roll, 0.0));
         //roll += 0.01;
-
-        // Turn camera left 30 degrees
-        renderer
-            .viewport
-            .set_rotation(Rotation3::from_euler_angles(0.0, 0.0, 3.14 / 6.0));
 
         // Get rid of previous buffer
         renderer.canvas.clear(color::BLACK);
