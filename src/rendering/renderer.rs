@@ -1,4 +1,4 @@
-use crate::models::model::{Instance, Model};
+use crate::models::model::Instance;
 use crate::models::triangle::Triangle;
 use crate::rendering::canvas::Canvas;
 use crate::rendering::scene::Scene;
@@ -38,7 +38,7 @@ impl Renderer {
 
     pub fn render_scene(&mut self, scene: &Scene) {
         for i in 0..scene.instances.len() {
-            self.render_instance(&scene.instances[i]);
+            self.render_instance(&scene.instances[i].borrow());
         }
     }
 
@@ -46,9 +46,13 @@ impl Renderer {
         let mut projected: Vec<Point2<f32>> = Vec::new();
         // Convert all 3d points into 2d points
         for i in 0..instance.model.vertices.len() {
-            let transformed_vertex = instance
-                .translation
+            let mut transformed_vertex = instance
+                .transformation
                 .transform_point(&instance.model.vertices[i]);
+            transformed_vertex = self
+                .viewport
+                .transformation
+                .transform_point(&transformed_vertex);
             projected.push(self.viewport.project_vertex(transformed_vertex));
         }
         for i in 0..instance.model.triangles.len() {
