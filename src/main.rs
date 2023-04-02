@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-extern crate nalgebra_glm;
+extern crate nalgebra;
 extern crate sdl2;
 
 mod color;
@@ -15,7 +15,7 @@ use crate::rendering::viewport::Viewport;
 use crate::sdl2::event::Event;
 use crate::sdl2::keyboard::Keycode;
 use crate::sdl2::EventPump;
-use nalgebra_glm::{Mat4, Vec3};
+use nalgebra::{Point3, Vector3};
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -37,17 +37,16 @@ fn init_sdl(title: &str, width: u32, height: u32) -> (Canvas, EventPump) {
 
 fn move_camera(viewport: &mut Viewport, dx: f32, dy: f32, dz: f32) {
     viewport.set_translation(
-        viewport.get_translation()
+        viewport.get_translation_values()
             + viewport
-                .rotation
-                .try_inverse()
-                .unwrap()
-                .transform_vector(&Vec3::new(dx, dy, dz)),
+                .get_rotation()
+                .inverse()
+                .transform_vector(&Vector3::new(dx, dy, dz)),
     );
 }
 
 fn rotate_camera(viewport: &mut Viewport, dthetax: f32, dthetay: f32, dthetaz: f32) {
-    viewport.set_rotation(viewport.get_rotation() + Vec3::new(dthetax, dthetay, dthetaz));
+    viewport.set_rotation(viewport.get_rotation_values() + Vector3::new(dthetax, dthetay, dthetaz));
 }
 
 fn main() {
@@ -64,15 +63,13 @@ fn main() {
     // Create an instance of our model
     let cube0: Rc<RefCell<Instance>> = Rc::new(RefCell::new(Instance::new(
         Rc::clone(&cube),
-        Vec3::new(1.0, 1.0, 1.0),
-        Vec3::new(0.0, 0.0, 0.0),
-        Vec3::new(0.0, 0.0, 10.0),
+        Vector3::new(1.0, 1.0, 1.0),
+        Vector3::new(0.0, 0.0, 0.0),
+        Vector3::new(0.0, 0.0, 10.0),
     )));
 
     // Add my instance to the scene and render the scene
     scene.add_instance(Rc::clone(&cube0));
-
-    let mut roll = 10.0;
 
     let mut pressed: HashMap<Keycode, bool> = HashMap::new();
 
@@ -147,12 +144,6 @@ fn main() {
         if pressed.contains_key(&Keycode::Right) && pressed[&Keycode::Right] {
             rotate_camera(&mut renderer.viewport, 0.0, -0.02, 0.0);
         }
-
-        // Animate things
-        //cube0
-        //    .borrow_mut()
-        //    .set_rotation(Rotation3::from_euler_angles(roll, roll, 0.0));
-        //roll += 0.01;
 
         // Get rid of previous buffer
         renderer.canvas.clear(color::BLACK);
