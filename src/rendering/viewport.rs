@@ -1,5 +1,5 @@
 use crate::rendering::canvas::Canvas;
-use nalgebra::{Point2, Point3, Rotation3, Translation3, Vector3};
+use nalgebra_glm::{Vec3, Vec4, Mat4};
 
 pub struct Viewport {
     cw: f32,
@@ -7,8 +7,8 @@ pub struct Viewport {
     vw: f32,
     vh: f32,
     d: f32,
-    translation: Translation3<f32>,
-    rotation: Rotation3<f32>,
+    translation: Mat4,
+    rotation: Mat4,
 }
 
 impl Viewport {
@@ -19,45 +19,34 @@ impl Viewport {
             vw: width,
             vh: height,
             d: depth,
-            translation: Translation3::new(0.0, 0.0, 0.0),
-            rotation: Rotation3::from_euler_angles(0.0, 0.0, 0.0),
+            translation: Mat4::default(),
+            rotation: Mat4::default(),
         }
     }
 
-    pub fn viewport_to_canvas(&self, p: Point2<f32>) -> Point2<f32> {
-        return Point2::new(p.x * (self.cw / self.vw), p.y * (self.ch / self.vh));
+    pub fn viewport_to_canvas(&self, point: Vec3) -> Vec3 {
+        return Vec3::new(point.x * (self.cw / self.vw), point.y * (self.ch / self.vh), 1.0);
     }
 
-    pub fn project_vertex(&self, v: Point3<f32>) -> Point2<f32> {
-        return self.viewport_to_canvas(Point2::new(v.x * self.d / v.z, v.y * self.d / v.z));
+    pub fn project_vertex(&self, vertex: &Vec4) -> Vec3 {
+        return self.viewport_to_canvas(Vec3::new(vertex.x * self.d / vertex.z, vertex.y * self.d / vertex.z, 1.0));
     }
 
-    pub fn get_translation(&self) -> &Translation3<f32> {
+    pub fn get_translation(&self) -> &Mat4 {
         return &self.translation;
     }
 
-    pub fn get_translation_values(&self) -> &Vector3<f32> {
-        return &self.translation.vector;
+    pub fn set_translation(&mut self, translation: Vec4) {
+        self.translation = Mat4::new_translation(&translation.xyz());
     }
 
-    pub fn set_translation(&mut self, new_translation: Vector3<f32>) {
-        self.translation = Translation3::from(new_translation);
-    }
-
-    pub fn get_rotation(&self) -> &Rotation3<f32> {
+    pub fn get_rotation(&self) -> &Mat4 {
         return &self.rotation;
     }
 
-    pub fn get_rotation_values(&self) -> Vector3<f32> {
-        return Vector3::new(
-            self.rotation.euler_angles().0,
-            self.rotation.euler_angles().1,
-            self.rotation.euler_angles().2,
-        );
-    }
-
-    pub fn set_rotation(&mut self, new_rotation: Vector3<f32>) {
-        self.rotation =
-            Rotation3::from_euler_angles(new_rotation[0], new_rotation[1], new_rotation[2]);
+    pub fn set_rotation(&mut self, rotation: &Vec4) {
+        self.rotation = Mat4::new_rotation(Vec3::z_axis().scale(rotation.z))
+            * Mat4::new_rotation(Vec3::y_axis().scale(rotation.y))
+            * Mat4::new_rotation(Vec3::x_axis().scale(rotation.x));
     }
 }

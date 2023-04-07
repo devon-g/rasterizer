@@ -3,7 +3,7 @@ use crate::models::triangle::Triangle;
 use crate::rendering::canvas::Canvas;
 use crate::rendering::scene::Scene;
 use crate::rendering::viewport::Viewport;
-use nalgebra::{Matrix4, Point2, Point3, Transform3};
+use nalgebra_glm::{Vec3, Vec4, Mat4};
 
 pub struct Renderer {
     pub canvas: Canvas,
@@ -15,11 +15,11 @@ impl Renderer {
         Renderer { canvas, viewport }
     }
 
-    pub fn render_object(&mut self, vertices: &Vec<Point3<f32>>, triangles: &Vec<Triangle>) {
-        let mut projected: Vec<Point2<f32>> = Vec::new();
+    pub fn render_object(&mut self, vertices: &Vec<Vec4>, triangles: &Vec<Triangle>) {
+        let mut projected: Vec<Vec3> = Vec::new();
         // Convert all 3d points into 2d points
         for vertex in vertices {
-            projected.push(self.viewport.project_vertex(*vertex));
+            projected.push(self.viewport.project_vertex(vertex));
         }
         // Render the triangles
         for triangle in triangles {
@@ -27,11 +27,11 @@ impl Renderer {
         }
     }
 
-    pub fn render_triangle(&mut self, triangle: &Triangle, projected: &Vec<Point2<f32>>) {
-        self.canvas.draw_filled_triangle(
-            projected[triangle.vertices[0] as usize],
-            projected[triangle.vertices[1] as usize],
-            projected[triangle.vertices[2] as usize],
+    pub fn render_triangle(&mut self, triangle: &Triangle, projected: &Vec<Vec3>) {
+        self.canvas.draw_wireframe_triangle(
+            &projected[triangle.vertices[0] as usize],
+            &projected[triangle.vertices[1] as usize],
+            &projected[triangle.vertices[2] as usize],
             triangle.color,
         );
     }
@@ -43,24 +43,13 @@ impl Renderer {
     }
 
     pub fn render_instance(&mut self, instance: &Instance) {
-        let mut projected: Vec<Point2<f32>> = Vec::new();
+        let mut projected: Vec<Vec3> = Vec::new();
         // Convert all 3d points into 2d points
-        let ultimate_transform: Matrix4<f32> = self
-            .viewport
-            .get_rotation()
-            .to_homogeneous()
-            * self
-                .viewport
-                .get_translation()
-                .to_homogeneous()
-                .try_inverse()
-                .unwrap()
-            * instance.get_translatioin().to_homogeneous()
-            * instance.get_rotation().to_homogeneous()
-            * instance.get_scale().to_homogeneous();
+        // TODO: Rebuild transform after converting to nalgebra glm
+        let ultimate_transform: Mat4 = Mat4::default();
         for i in 0..instance.get_model().vertices.len() {
             projected.push(self.viewport.project_vertex(
-                ultimate_transform.transform_point(&instance.get_model().vertices[i]),
+                    &ultimate_transform.transform_vector(&instance.get_model().vertices[i].xyz())
             ));
         }
         for i in 0..instance.get_model().triangles.len() {

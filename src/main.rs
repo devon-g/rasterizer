@@ -1,11 +1,12 @@
 #![allow(dead_code)]
 
-extern crate nalgebra;
+extern crate nalgebra_glm;
 extern crate sdl2;
 
 mod color;
 mod models;
 mod rendering;
+mod utility;
 
 use crate::models::model::{Instance, Model};
 use crate::rendering::canvas::Canvas;
@@ -15,7 +16,7 @@ use crate::rendering::viewport::Viewport;
 use crate::sdl2::event::Event;
 use crate::sdl2::keyboard::Keycode;
 use crate::sdl2::EventPump;
-use nalgebra::{Point3, Vector3};
+use nalgebra_glm::Vec4;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -35,20 +36,6 @@ fn init_sdl(title: &str, width: u32, height: u32) -> (Canvas, EventPump) {
     )
 }
 
-fn move_camera(viewport: &mut Viewport, dx: f32, dy: f32, dz: f32) {
-    viewport.set_translation(
-        viewport.get_translation_values()
-            + viewport
-                .get_rotation()
-                .inverse()
-                .transform_vector(&Vector3::new(dx, dy, dz)),
-    );
-}
-
-fn rotate_camera(viewport: &mut Viewport, dthetax: f32, dthetay: f32, dthetaz: f32) {
-    viewport.set_rotation(viewport.get_rotation_values() + Vector3::new(dthetax, dthetay, dthetaz));
-}
-
 fn main() {
     let (canvas, mut event_pump) = init_sdl("Rust SDL2", 1280, 720);
     let vp = Viewport::new(12.80, 7.20, 6.0, &canvas);
@@ -63,9 +50,9 @@ fn main() {
     // Create an instance of our model
     let cube0: Rc<RefCell<Instance>> = Rc::new(RefCell::new(Instance::new(
         Rc::clone(&cube),
-        Vector3::new(1.0, 1.0, 1.0),
-        Vector3::new(0.0, 0.0, 0.0),
-        Vector3::new(0.0, 0.0, 10.0),
+        Vec4::new(1.0, 1.0, 1.0, 0.0),
+        Vec4::new(0.0, 0.0, 0.0, 0.0),
+        Vec4::new(0.0, 0.0, 10.0, 0.0),
     )));
 
     // Add my instance to the scene and render the scene
@@ -133,16 +120,16 @@ fn main() {
         }
         // Camera rotation control
         if pressed.contains_key(&Keycode::Up) && pressed[&Keycode::Up] {
-            rotate_camera(&mut renderer.viewport, 0.02, 0.0, 0.0);
-        }
-        if pressed.contains_key(&Keycode::Down) && pressed[&Keycode::Down] {
             rotate_camera(&mut renderer.viewport, -0.02, 0.0, 0.0);
         }
+        if pressed.contains_key(&Keycode::Down) && pressed[&Keycode::Down] {
+            rotate_camera(&mut renderer.viewport, 0.02, 0.0, 0.0);
+        }
         if pressed.contains_key(&Keycode::Left) && pressed[&Keycode::Left] {
-            rotate_camera(&mut renderer.viewport, 0.0, 0.02, 0.0);
+            rotate_camera(&mut renderer.viewport, 0.0, -0.02, 0.0);
         }
         if pressed.contains_key(&Keycode::Right) && pressed[&Keycode::Right] {
-            rotate_camera(&mut renderer.viewport, 0.0, -0.02, 0.0);
+            rotate_camera(&mut renderer.viewport, 0.0, 0.02, 0.0);
         }
 
         // Get rid of previous buffer

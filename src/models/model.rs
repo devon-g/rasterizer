@@ -1,32 +1,29 @@
 use crate::color;
 use crate::models::triangle::Triangle;
-use nalgebra::{Point3, Rotation3, Scale3, Translation3, Vector3};
+use nalgebra_glm::{Mat4, Vec3, Vec4};
 use std::rc::Rc;
 
 pub struct Model {
-    pub vertices: Vec<Point3<f32>>,
+    pub vertices: Vec<Vec4>,
     pub triangles: Vec<Triangle>,
 }
 
 pub struct Instance {
     model: Rc<Model>,
-    scale: Scale3<f32>,
-    rotation: Rotation3<f32>,
-    translation: Translation3<f32>,
+    scale: Mat4,
+    rotation: Mat4,
+    translation: Mat4,
 }
 
 impl Instance {
-    pub fn new(
-        model: Rc<Model>,
-        scale: Vector3<f32>,
-        rotation: Vector3<f32>,
-        translation: Vector3<f32>,
-    ) -> Self {
+    pub fn new(model: Rc<Model>, scale: &Vec4, rotation: &Vec4, translation: &Vec4) -> Self {
         return Self {
             model,
-            scale: Scale3::from(scale),
-            rotation: Rotation3::from_euler_angles(rotation[0], rotation[1], rotation[2]),
-            translation: Translation3::from(translation),
+            scale: Mat4::new_nonuniform_scaling(&scale.xyz()),
+            rotation: Mat4::new_rotation(Vec3::z_axis().scale(rotation.z))
+            * Mat4::new_rotation(Vec3::y_axis().scale(rotation.y))
+            * Mat4::new_rotation(Vec3::x_axis().scale(rotation.x)),
+            translation: Mat4::new_translation(&translation.xyz()),
         };
     }
 
@@ -34,59 +31,44 @@ impl Instance {
         return &self.model;
     }
 
-    pub fn get_scale(&self) -> &Scale3<f32> {
+    pub fn get_scale(&self) -> &Mat4 {
         return &self.scale;
     }
 
-    pub fn get_scale_values(&self) -> &Vector3<f32> {
-        return &self.scale.vector;
+    pub fn set_scale(&mut self, scale: &Vec4) {
+        self.scale = Mat4::new_nonuniform_scaling(&scale.xyz());
     }
 
-    pub fn set_scale(&mut self, new_scale: Vector3<f32>) {
-        self.scale = Scale3::from(new_scale);
-    }
-
-    pub fn get_rotation(&self) -> &Rotation3<f32> {
+    pub fn get_rotation(&self) -> &Mat4 {
         return &self.rotation;
     }
 
-    pub fn get_rotation_values(&self) -> Vector3<f32> {
-        return Vector3::new(
-            self.rotation.euler_angles().0,
-            self.rotation.euler_angles().1,
-            self.rotation.euler_angles().2,
-        );
+    pub fn set_rotation(&mut self, rotation: &Vec4) {
+        self.rotation = Mat4::new_rotation(Vec3::z_axis().scale(rotation.z))
+            * Mat4::new_rotation(Vec3::y_axis().scale(rotation.y))
+            * Mat4::new_rotation(Vec3::x_axis().scale(rotation.x));
     }
 
-    pub fn set_rotation(&mut self, new_rotation: Vector3<f32>) {
-        self.rotation =
-            Rotation3::from_euler_angles(new_rotation[0], new_rotation[1], new_rotation[2]);
-    }
-
-    pub fn get_translatioin(&self) -> &Translation3<f32> {
+    pub fn get_translation(&self) -> &Mat4 {
         return &self.translation;
     }
 
-    pub fn get_translation_values(&self) -> &Vector3<f32> {
-        return &self.translation.vector;
-    }
-
-    pub fn set_translation(&mut self, new_translation: Vector3<f32>) {
-        self.translation = Translation3::from(new_translation);
+    pub fn set_translation(&mut self, translation: &Vec4) {
+        self.translation = Mat4::new_translation(&translation.xyz());
     }
 }
 
 pub fn default_cube() -> Model {
     Model {
         vertices: vec![
-            Point3::new(1.0, 1.0, 1.0),
-            Point3::new(-1.0, 1.0, 1.0),
-            Point3::new(-1.0, -1.0, 1.0),
-            Point3::new(1.0, -1.0, 1.0),
-            Point3::new(1.0, 1.0, -1.0),
-            Point3::new(-1.0, 1.0, -1.0),
-            Point3::new(-1.0, -1.0, -1.0),
-            Point3::new(1.0, -1.0, -1.0),
+            Vec4::new(1.0, 1.0, 1.0, 1.0),
+            Vec4::new(-1.0, 1.0, 1.0, 1.0),
+            Vec4::new(-1.0, -1.0, 1.0, 1.0),
+            Vec4::new(1.0, -1.0, 1.0, 1.0),
+            Vec4::new(1.0, 1.0, -1.0, 1.0),
+            Vec4::new(-1.0, 1.0, -1.0, 1.0),
+            Vec4::new(-1.0, -1.0, -1.0, 1.0),
+            Vec4::new(1.0, -1.0, -1.0, 1.0),
         ],
         triangles: vec![
             Triangle::new(0, 1, 2, color::RED),
