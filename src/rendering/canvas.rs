@@ -50,13 +50,13 @@ impl Canvas {
     ///
     /// Uses interpolation to determine which pixels to draw and which color
     /// intensity to use for those pixels (between black and given color).
-    pub fn draw_gradient_triangle(
+    pub fn draw_gradient_triangle<'a>(
         &mut self,
-        mut p0: &Vec3,
+        mut p0: &'a Vec3,
         p0h: f32,
-        mut p1: &Vec3,
+        mut p1: &'a Vec3,
         p1h: f32,
-        mut p2: &Vec3,
+        mut p2: &'a Vec3,
         p2h: f32,
         color: Color,
     ) {
@@ -123,11 +123,11 @@ impl Canvas {
     /// Draws filled triangle
     ///
     /// Uses interpolation to determine which pixels to draw inside the triangle
-    pub fn draw_filled_triangle(
+    pub fn draw_filled_triangle<'a>(
         &mut self,
-        mut p0: &Vec3,
-        mut p1: &Vec3,
-        mut p2: &Vec3,
+        mut p0: &'a Vec3,
+        mut p1: &'a Vec3,
+        mut p2: &'a Vec3,
         color: Color,
     ) {
         // Organize points by y level. P0 <= P1 <= P2
@@ -207,7 +207,7 @@ impl Canvas {
     /// line function.
     ///
     /// Uses floats throughout computation and converts to integer at the end.
-    pub fn draw_line(&mut self, mut p0: &Vec3, mut p1: &Vec3, color: Color) {
+    pub fn draw_line<'a>(&mut self, mut p0: &'a Vec3, mut p1: &'a Vec3, color: Color) {
         // Is there more rise than run?
         if (p1.x - p0.x).abs() > (p1.y - p0.y).abs() {
             // Compute y in terms of x so we can draw horizontal lines

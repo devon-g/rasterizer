@@ -1,12 +1,11 @@
 #![allow(dead_code)]
 
-extern crate nalgebra_glm;
+extern crate nalgebra_glm as glm;
 extern crate sdl2;
 
 mod color;
 mod models;
 mod rendering;
-mod utility;
 
 use crate::models::model::{Instance, Model};
 use crate::rendering::canvas::Canvas;
@@ -18,7 +17,6 @@ use crate::sdl2::keyboard::Keycode;
 use crate::sdl2::EventPump;
 use nalgebra_glm::Vec4;
 use std::cell::RefCell;
-use std::collections::HashMap;
 use std::rc::Rc;
 
 /// Produces a [`Canvas`] and an [`EventPump`]
@@ -33,8 +31,9 @@ fn init_sdl(title: &str, width: u32, height: u32) -> (Canvas, EventPump) {
     (
         Canvas::new(window, width as i32, height as i32),
         context.event_pump().unwrap(),
-    )
+   )
 }
+
 
 fn main() {
     let (canvas, mut event_pump) = init_sdl("Rust SDL2", 1280, 720);
@@ -50,87 +49,26 @@ fn main() {
     // Create an instance of our model
     let cube0: Rc<RefCell<Instance>> = Rc::new(RefCell::new(Instance::new(
         Rc::clone(&cube),
-        Vec4::new(1.0, 1.0, 1.0, 0.0),
-        Vec4::new(0.0, 0.0, 0.0, 0.0),
-        Vec4::new(0.0, 0.0, 10.0, 0.0),
+        &Vec4::new(1.0, 1.0, 1.0, 0.0),
+        &Vec4::new(0.0, 0.0, 0.0, 0.0),
+        &Vec4::new(0.0, 0.0, 10.0, 0.0),
     )));
 
     // Add my instance to the scene and render the scene
     scene.add_instance(Rc::clone(&cube0));
 
-    let mut pressed: HashMap<Keycode, bool> = HashMap::new();
-
+    let mut translation: Vec4 = Vec4::new(0.0, 0.0, 0.0, 0.0);
     'running: loop {
         for event in event_pump.poll_iter() {
             match event {
-                Event::KeyDown { keycode, .. } => match keycode.unwrap() {
-                    Keycode::W
-                    | Keycode::A
-                    | Keycode::S
-                    | Keycode::D
-                    | Keycode::Up
-                    | Keycode::Down
-                    | Keycode::Left
-                    | Keycode::Right
-                    | Keycode::Space
-                    | Keycode::LShift => {
-                        pressed.insert(keycode.unwrap(), true);
-                    }
-                    Keycode::Escape => break 'running,
-                    _ => {}
-                },
-                Event::KeyUp { keycode, .. } => match keycode.unwrap() {
-                    Keycode::W
-                    | Keycode::A
-                    | Keycode::S
-                    | Keycode::D
-                    | Keycode::Up
-                    | Keycode::Down
-                    | Keycode::Left
-                    | Keycode::Right
-                    | Keycode::Space
-                    | Keycode::LShift => {
-                        pressed.insert(keycode.unwrap(), false);
-                    }
-                    _ => {}
-                },
-                Event::Quit { .. } => break 'running,
+                Event::Quit { .. } 
+                | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => break 'running,
                 _ => {}
             }
         }
 
-        // Camera translation control
-        if pressed.contains_key(&Keycode::W) && pressed[&Keycode::W] {
-            move_camera(&mut renderer.viewport, 0.0, 0.0, 0.1);
-        }
-        if pressed.contains_key(&Keycode::A) && pressed[&Keycode::A] {
-            move_camera(&mut renderer.viewport, -0.1, 0.0, 0.0);
-        }
-        if pressed.contains_key(&Keycode::S) && pressed[&Keycode::S] {
-            move_camera(&mut renderer.viewport, 0.0, 0.0, -0.1);
-        }
-        if pressed.contains_key(&Keycode::D) && pressed[&Keycode::D] {
-            move_camera(&mut renderer.viewport, 0.1, 0.0, 0.0);
-        }
-        if pressed.contains_key(&Keycode::Space) && pressed[&Keycode::Space] {
-            move_camera(&mut renderer.viewport, 0.0, 0.1, 0.0);
-        }
-        if pressed.contains_key(&Keycode::LShift) && pressed[&Keycode::LShift] {
-            move_camera(&mut renderer.viewport, 0.0, -0.1, 0.0);
-        }
-        // Camera rotation control
-        if pressed.contains_key(&Keycode::Up) && pressed[&Keycode::Up] {
-            rotate_camera(&mut renderer.viewport, -0.02, 0.0, 0.0);
-        }
-        if pressed.contains_key(&Keycode::Down) && pressed[&Keycode::Down] {
-            rotate_camera(&mut renderer.viewport, 0.02, 0.0, 0.0);
-        }
-        if pressed.contains_key(&Keycode::Left) && pressed[&Keycode::Left] {
-            rotate_camera(&mut renderer.viewport, 0.0, -0.02, 0.0);
-        }
-        if pressed.contains_key(&Keycode::Right) && pressed[&Keycode::Right] {
-            rotate_camera(&mut renderer.viewport, 0.0, 0.02, 0.0);
-        }
+        renderer.viewport.set_translation(&translation);
+        translation += Vec4::new(0.0, 0.0, 0.01, 0.0);
 
         // Get rid of previous buffer
         renderer.canvas.clear(color::BLACK);

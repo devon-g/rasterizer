@@ -19,24 +19,24 @@ impl Viewport {
             vw: width,
             vh: height,
             d: depth,
-            translation: Mat4::default(),
-            rotation: Mat4::default(),
+            translation: Mat4::identity(),
+            rotation: Mat4::identity(),
         }
     }
 
-    pub fn viewport_to_canvas(&self, point: Vec3) -> Vec3 {
+    pub fn viewport_to_canvas(&self, point: &Vec3) -> Vec3 {
         return Vec3::new(point.x * (self.cw / self.vw), point.y * (self.ch / self.vh), 1.0);
     }
 
     pub fn project_vertex(&self, vertex: &Vec4) -> Vec3 {
-        return self.viewport_to_canvas(Vec3::new(vertex.x * self.d / vertex.z, vertex.y * self.d / vertex.z, 1.0));
+        return self.viewport_to_canvas(&Vec3::new(vertex.x * self.d / vertex.z, vertex.y * self.d / vertex.z, 1.0));
     }
 
     pub fn get_translation(&self) -> &Mat4 {
         return &self.translation;
     }
 
-    pub fn set_translation(&mut self, translation: Vec4) {
+    pub fn set_translation(&mut self, translation: &Vec4) {
         self.translation = Mat4::new_translation(&translation.xyz());
     }
 

@@ -46,10 +46,14 @@ impl Renderer {
         let mut projected: Vec<Vec3> = Vec::new();
         // Convert all 3d points into 2d points
         // TODO: Rebuild transform after converting to nalgebra glm
-        let ultimate_transform: Mat4 = Mat4::default();
+        let ultimate_transform: Mat4 = self.viewport.get_rotation().try_inverse().unwrap()
+            * self.viewport.get_translation().try_inverse().unwrap()
+            * instance.get_translation()
+            * instance.get_rotation()
+            * instance.get_scale();
         for i in 0..instance.get_model().vertices.len() {
             projected.push(self.viewport.project_vertex(
-                    &ultimate_transform.transform_vector(&instance.get_model().vertices[i].xyz())
+                    &(ultimate_transform * instance.get_model().vertices[i])
             ));
         }
         for i in 0..instance.get_model().triangles.len() {
