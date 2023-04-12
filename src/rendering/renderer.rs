@@ -3,7 +3,7 @@ use crate::models::triangle::Triangle;
 use crate::rendering::canvas::Canvas;
 use crate::rendering::scene::Scene;
 use crate::rendering::viewport::Viewport;
-use nalgebra_glm::{Vec3, Vec4, Mat4};
+use nalgebra_glm::{Mat4, Vec3, Vec4};
 
 pub struct Renderer {
     pub canvas: Canvas,
@@ -46,14 +46,11 @@ impl Renderer {
         let mut projected: Vec<Vec3> = Vec::new();
         // Convert all 3d points into 2d points
         // TODO: Rebuild transform after converting to nalgebra glm
-        let ultimate_transform: Mat4 = self.viewport.get_rotation().try_inverse().unwrap()
-            * self.viewport.get_translation().try_inverse().unwrap()
-            * instance.get_translation()
-            * instance.get_rotation()
-            * instance.get_scale();
         for i in 0..instance.get_model().vertices.len() {
             projected.push(self.viewport.project_vertex(
-                    &(ultimate_transform * instance.get_model().vertices[i])
+                &(self.viewport.get_transform()
+                    * instance.get_transform()
+                    * instance.get_model().vertices[i]),
             ));
         }
         for i in 0..instance.get_model().triangles.len() {

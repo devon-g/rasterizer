@@ -9,3 +9,7 @@ edition = "2021"
 nalgebra = "0.32.2"
 nalgebra-glm = "0.18.0"
 sdl2 = "0.35.2"
+
+[profile.release-with-debug]
+inherits = "release"
+debug = true

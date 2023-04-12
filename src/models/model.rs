@@ -13,18 +13,23 @@ pub struct Instance {
     scale: Mat4,
     rotation: Mat4,
     translation: Mat4,
+    transformation: Mat4,
 }
 
 impl Instance {
     pub fn new(model: Rc<Model>, scale: &Vec4, rotation: &Vec4, translation: &Vec4) -> Self {
-        return Self {
+        let mut instance = Self {
             model,
             scale: Mat4::new_nonuniform_scaling(&scale.xyz()),
             rotation: Mat4::new_rotation(Vec3::z_axis().scale(rotation.z))
             * Mat4::new_rotation(Vec3::y_axis().scale(rotation.y))
             * Mat4::new_rotation(Vec3::x_axis().scale(rotation.x)),
             translation: Mat4::new_translation(&translation.xyz()),
+            transformation: Mat4::identity(),
         };
+        instance.generate_transform();
+
+        return instance;
     }
 
     pub fn get_model(&self) -> &Model {
@@ -37,6 +42,7 @@ impl Instance {
 
     pub fn set_scale(&mut self, scale: &Vec4) {
         self.scale = Mat4::new_nonuniform_scaling(&scale.xyz());
+        self.generate_transform();
     }
 
     pub fn get_rotation(&self) -> &Mat4 {
@@ -47,6 +53,7 @@ impl Instance {
         self.rotation = Mat4::new_rotation(Vec3::z_axis().scale(rotation.z))
             * Mat4::new_rotation(Vec3::y_axis().scale(rotation.y))
             * Mat4::new_rotation(Vec3::x_axis().scale(rotation.x));
+        self.generate_transform();
     }
 
     pub fn get_translation(&self) -> &Mat4 {
@@ -55,6 +62,15 @@ impl Instance {
 
     pub fn set_translation(&mut self, translation: &Vec4) {
         self.translation = Mat4::new_translation(&translation.xyz());
+        self.generate_transform();
+    }
+    
+    pub fn generate_transform(&mut self) {
+        self.transformation = self.translation * self.rotation * self.scale;
+    }
+
+    pub fn get_transform(&self) -> Mat4 {
+        return self.transformation;
     }
 }
 

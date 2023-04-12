@@ -1,5 +1,5 @@
 use crate::rendering::canvas::Canvas;
-use nalgebra_glm::{Vec3, Vec4, Mat4};
+use nalgebra_glm::{Mat4, Vec3, Vec4};
 
 pub struct Viewport {
     cw: f32,
@@ -9,6 +9,7 @@ pub struct Viewport {
     d: f32,
     translation: Mat4,
     rotation: Mat4,
+    transformation: Mat4,
 }
 
 impl Viewport {
@@ -21,15 +22,24 @@ impl Viewport {
             d: depth,
             translation: Mat4::identity(),
             rotation: Mat4::identity(),
+            transformation: Mat4::identity(),
         }
     }
 
     pub fn viewport_to_canvas(&self, point: &Vec3) -> Vec3 {
-        return Vec3::new(point.x * (self.cw / self.vw), point.y * (self.ch / self.vh), 1.0);
+        return Vec3::new(
+            point.x * (self.cw / self.vw),
+            point.y * (self.ch / self.vh),
+            1.0,
+        );
     }
 
     pub fn project_vertex(&self, vertex: &Vec4) -> Vec3 {
-        return self.viewport_to_canvas(&Vec3::new(vertex.x * self.d / vertex.z, vertex.y * self.d / vertex.z, 1.0));
+        return self.viewport_to_canvas(&Vec3::new(
+            vertex.x * self.d / vertex.z,
+            vertex.y * self.d / vertex.z,
+            1.0,
+        ));
     }
 
     pub fn get_translation(&self) -> &Mat4 {
@@ -38,6 +48,7 @@ impl Viewport {
 
     pub fn set_translation(&mut self, translation: &Vec4) {
         self.translation = Mat4::new_translation(&translation.xyz());
+        self.generate_transform();
     }
 
     pub fn get_rotation(&self) -> &Mat4 {
@@ -48,5 +59,15 @@ impl Viewport {
         self.rotation = Mat4::new_rotation(Vec3::z_axis().scale(rotation.z))
             * Mat4::new_rotation(Vec3::y_axis().scale(rotation.y))
             * Mat4::new_rotation(Vec3::x_axis().scale(rotation.x));
+        self.generate_transform();
+    }
+
+    pub fn generate_transform(&mut self) {
+        self.transformation =
+            self.rotation.try_inverse().unwrap() * self.translation.try_inverse().unwrap();
+    }
+
+    pub fn get_transform(&self) -> Mat4 {
+        return self.transformation;
     }
 }
