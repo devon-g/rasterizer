@@ -21,9 +21,9 @@ impl Instance {
         let mut instance = Self {
             model,
             scale: Mat4::new_nonuniform_scaling(&scale.xyz()),
-            rotation: Mat4::new_rotation(Vec3::z_axis().scale(rotation.z))
-            * Mat4::new_rotation(Vec3::y_axis().scale(rotation.y))
-            * Mat4::new_rotation(Vec3::x_axis().scale(rotation.x)),
+            rotation: Mat4::new_rotation(-Vec3::z_axis().scale(rotation.z))
+            * Mat4::new_rotation(-Vec3::y_axis().scale(rotation.y))
+            * Mat4::new_rotation(-Vec3::x_axis().scale(rotation.x)),
             translation: Mat4::new_translation(&translation.xyz()),
             transformation: Mat4::identity(),
         };
@@ -50,9 +50,9 @@ impl Instance {
     }
 
     pub fn set_rotation(&mut self, rotation: &Vec4) {
-        self.rotation = Mat4::new_rotation(Vec3::z_axis().scale(rotation.z))
-            * Mat4::new_rotation(Vec3::y_axis().scale(rotation.y))
-            * Mat4::new_rotation(Vec3::x_axis().scale(rotation.x));
+        self.rotation = Mat4::new_rotation(-Vec3::z_axis().scale(rotation.z))
+            * Mat4::new_rotation(-Vec3::y_axis().scale(rotation.y))
+            * Mat4::new_rotation(-Vec3::x_axis().scale(rotation.x));
         self.generate_transform();
     }
 

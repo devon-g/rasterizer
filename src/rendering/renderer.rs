@@ -3,7 +3,7 @@ use crate::models::triangle::Triangle;
 use crate::rendering::canvas::Canvas;
 use crate::rendering::scene::Scene;
 use crate::rendering::viewport::Viewport;
-use nalgebra_glm::{Mat4, Vec3, Vec4};
+use nalgebra_glm::{Vec3, Vec4};
 
 pub struct Renderer {
     pub canvas: Canvas,
@@ -37,6 +37,7 @@ impl Renderer {
     }
 
     pub fn render_scene(&mut self, scene: &Scene) {
+        // TODO: Clip scene
         for i in 0..scene.instances.len() {
             self.render_instance(&scene.instances[i].borrow());
         }

@@ -17,6 +17,7 @@ use crate::sdl2::keyboard::Keycode;
 use crate::sdl2::EventPump;
 use nalgebra_glm::Vec4;
 use std::cell::RefCell;
+use std::f32::consts::PI;
 use std::rc::Rc;
 
 /// Produces a [`Canvas`] and an [`EventPump`]
@@ -57,7 +58,6 @@ fn main() {
     // Add my instance to the scene and render the scene
     scene.add_instance(Rc::clone(&cube0));
 
-    let mut translation: Vec4 = Vec4::new(0.0, 0.0, 0.0, 0.0);
     'running: loop {
         for event in event_pump.poll_iter() {
             match event {
@@ -66,9 +66,6 @@ fn main() {
                 _ => {}
             }
         }
-
-        renderer.viewport.set_translation(&translation);
-        translation += Vec4::new(0.0, 0.0, 0.01, 0.0);
 
         // Get rid of previous buffer
         renderer.canvas.clear(color::BLACK);
