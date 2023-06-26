@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 extern crate nalgebra_glm as glm;
 extern crate sdl2;
 
@@ -17,7 +15,6 @@ use crate::sdl2::keyboard::Keycode;
 use crate::sdl2::EventPump;
 use nalgebra_glm::Vec4;
 use std::cell::RefCell;
-use std::f32::consts::PI;
 use std::rc::Rc;
 
 /// Produces a [`Canvas`] and an [`EventPump`]
@@ -32,9 +29,8 @@ fn init_sdl(title: &str, width: u32, height: u32) -> (Canvas, EventPump) {
     (
         Canvas::new(window, width as i32, height as i32),
         context.event_pump().unwrap(),
-   )
+    )
 }
-
 
 fn main() {
     let (canvas, mut event_pump) = init_sdl("Rust SDL2", 1280, 720);
@@ -61,8 +57,11 @@ fn main() {
     'running: loop {
         for event in event_pump.poll_iter() {
             match event {
-                Event::Quit { .. } 
-                | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => break 'running,
+                Event::Quit { .. }
+                | Event::KeyDown {
+                    keycode: Some(Keycode::Escape),
+                    ..
+                } => break 'running,
                 _ => {}
             }
         }
