@@ -39,7 +39,7 @@ impl Renderer {
     pub fn render_scene(&mut self, scene: &Scene) {
         // TODO: Clip scene
         for i in 0..scene.instances.len() {
-            self.render_instance(&scene.instances[i].borrow());
+            self.render_instance(&scene.instances[i]);
         }
     }
 

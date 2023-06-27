@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 extern crate nalgebra_glm as glm;
 extern crate sdl2;
 
@@ -14,8 +16,6 @@ use crate::sdl2::event::Event;
 use crate::sdl2::keyboard::Keycode;
 use crate::sdl2::EventPump;
 use nalgebra_glm::Vec4;
-use std::cell::RefCell;
-use std::rc::Rc;
 
 /// Produces a [`Canvas`] and an [`EventPump`]
 fn init_sdl(title: &str, width: u32, height: u32) -> (Canvas, EventPump) {
@@ -41,18 +41,18 @@ fn main() {
     let mut scene: Scene = Scene::new();
 
     // Generate default model
-    let cube: Rc<Model> = Rc::new(models::model::default_cube());
+    let cube: Model = models::model::default_cube();
 
     // Create an instance of our model
-    let cube0: Rc<RefCell<Instance>> = Rc::new(RefCell::new(Instance::new(
-        Rc::clone(&cube),
+    let cube0: Instance = Instance::new(
+        &cube,
         &Vec4::new(1.0, 1.0, 1.0, 0.0),
         &Vec4::new(0.0, 0.0, 0.0, 0.0),
         &Vec4::new(0.0, 0.0, 10.0, 0.0),
-    )));
+    );
 
     // Add my instance to the scene and render the scene
-    scene.add_instance(Rc::clone(&cube0));
+    scene.add_instance(cube0);
 
     'running: loop {
         for event in event_pump.poll_iter() {

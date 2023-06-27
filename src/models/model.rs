@@ -1,29 +1,28 @@
 use crate::color;
 use crate::models::triangle::Triangle;
 use nalgebra_glm::{Mat4, Vec3, Vec4};
-use std::rc::Rc;
 
 pub struct Model {
     pub vertices: Vec<Vec4>,
     pub triangles: Vec<Triangle>,
 }
 
-pub struct Instance {
-    model: Rc<Model>,
+pub struct Instance<'a> {
+    model: &'a Model,
     scale: Mat4,
     rotation: Mat4,
     translation: Mat4,
     transformation: Mat4,
 }
 
-impl Instance {
-    pub fn new(model: Rc<Model>, scale: &Vec4, rotation: &Vec4, translation: &Vec4) -> Self {
+impl<'a> Instance<'a> {
+    pub fn new(model: &'a Model, scale: &Vec4, rotation: &Vec4, translation: &Vec4) -> Self {
         let mut instance = Self {
             model,
             scale: Mat4::new_nonuniform_scaling(&scale.xyz()),
             rotation: Mat4::new_rotation(-Vec3::z_axis().scale(rotation.z))
-            * Mat4::new_rotation(-Vec3::y_axis().scale(rotation.y))
-            * Mat4::new_rotation(-Vec3::x_axis().scale(rotation.x)),
+                * Mat4::new_rotation(-Vec3::y_axis().scale(rotation.y))
+                * Mat4::new_rotation(-Vec3::x_axis().scale(rotation.x)),
             translation: Mat4::new_translation(&translation.xyz()),
             transformation: Mat4::identity(),
         };
@@ -64,7 +63,7 @@ impl Instance {
         self.translation = Mat4::new_translation(&translation.xyz());
         self.generate_transform();
     }
-    
+
     pub fn generate_transform(&mut self) {
         self.transformation = self.translation * self.rotation * self.scale;
     }
