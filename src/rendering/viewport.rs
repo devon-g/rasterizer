@@ -15,12 +15,12 @@ impl Plane {
     }
 
     pub fn signed_distance(&self, point: &Vec4) -> f32 {
-        return self.normal.dot(point) + self.d;
+        self.normal.dot(point) + self.d
     }
 
     pub fn intersection(&self, p0: &Vec4, p1: &Vec4) -> Vec4 {
         let t = (-self.d - self.normal.dot(p0)) / self.normal.dot(&(p1 - p0));
-        return p0 + t*(p1 - p0);
+        p0 + t*(p1 - p0)
     }
 }
 
@@ -58,23 +58,23 @@ impl Viewport {
     }
 
     pub fn viewport_to_canvas(&self, point: &Vec3) -> Vec3 {
-        return Vec3::new(
+        Vec3::new(
             point.x * (self.cw / self.vw),
             point.y * (self.ch / self.vh),
             1.0,
-        );
+        )
     }
 
     pub fn project_vertex(&self, vertex: &Vec4) -> Vec3 {
-        return self.viewport_to_canvas(&Vec3::new(
+        self.viewport_to_canvas(&Vec3::new(
             vertex.x * self.d / vertex.z,
             vertex.y * self.d / vertex.z,
             1.0,
-        ));
+        ))
     }
 
     pub fn get_translation(&self) -> &Mat4 {
-        return &self.translation;
+        &self.translation
     }
 
     pub fn set_translation(&mut self, translation: &Vec4) {
@@ -83,7 +83,7 @@ impl Viewport {
     }
 
     pub fn get_rotation(&self) -> &Mat4 {
-        return &self.rotation;
+        &self.rotation
     }
 
     pub fn set_rotation(&mut self, rotation: &Vec4) {
@@ -99,6 +99,6 @@ impl Viewport {
     }
 
     pub fn get_transform(&self) -> Mat4 {
-        return self.transformation;
+        self.transformation
     }
 }

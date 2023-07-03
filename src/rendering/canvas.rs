@@ -1,5 +1,6 @@
 use crate::color::Color;
 use nalgebra_glm::Vec3;
+use nalgebra_glm::Vec4;
 use sdl2::rect::Point;
 use sdl2::video::Window;
 
@@ -50,14 +51,16 @@ impl Canvas {
     ///
     /// Uses interpolation to determine which pixels to draw and which color
     /// intensity to use for those pixels (between black and given color).
+    ///
+    /// # Arguments
+    /// * `p0` - A Vec4 consisting of x, y, z coordinates and w intensity
+    /// * `p1` - A Vec4 consisting of x, y, z coordinates and w intensity
+    /// * `p2` - A Vec4 consisting of x, y, z coordinates and w intensity
     pub fn draw_gradient_triangle<'a>(
         &mut self,
-        mut p0: &'a Vec3,
-        p0h: f32,
-        mut p1: &'a Vec3,
-        p1h: f32,
-        mut p2: &'a Vec3,
-        p2h: f32,
+        mut p0: &'a Vec4,
+        mut p1: &'a Vec4,
+        mut p2: &'a Vec4,
         color: Color,
     ) {
         // Organize points by y level. P0 <= P1 <= P2
@@ -73,13 +76,13 @@ impl Canvas {
 
         // Compute x's for each row in the triangle
         let x01 = self.interpolate(p0.y, p0.x, p1.y, p1.x);
-        let h01 = self.interpolate(p0.y, p0h, p1.y, p1h);
+        let h01 = self.interpolate(p0.y, p0.w, p1.y, p1.w);
 
-        let x12 = self.interpolate(p1.y, p1h, p2.y, p2h);
-        let h12 = self.interpolate(p1.y, p1h, p2.y, p2h);
+        let x12 = self.interpolate(p1.y, p1.w, p2.y, p2.w);
+        let h12 = self.interpolate(p1.y, p1.w, p2.y, p2.w);
 
         let x02 = self.interpolate(p0.y, p0.x, p2.y, p2.x);
-        let h02 = self.interpolate(p0.y, p0h, p2.y, p2h);
+        let h02 = self.interpolate(p0.y, p0.w, p2.y, p2.w);
 
         // x01 and x12 have a common point so we remove one from x01 and join them
         let x012 = [&x01[..x01.len() - 1], &x12[..]].concat();
@@ -194,10 +197,10 @@ impl Canvas {
             let mut d = d0;
             for _ in (i0 as i32)..=(i1 as i32) {
                 values.push(d);
-                d = d + a;
+                d += a;
             }
 
-            return values;
+            values
         }
     }
 

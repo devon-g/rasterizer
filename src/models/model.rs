@@ -28,15 +28,15 @@ impl<'a> Instance<'a> {
         };
         instance.generate_transform();
 
-        return instance;
+        instance
     }
 
     pub fn get_model(&self) -> &Model {
-        return &self.model;
+        self.model
     }
 
     pub fn get_scale(&self) -> &Mat4 {
-        return &self.scale;
+        &self.scale
     }
 
     pub fn set_scale(&mut self, scale: &Vec4) {
@@ -45,7 +45,7 @@ impl<'a> Instance<'a> {
     }
 
     pub fn get_rotation(&self) -> &Mat4 {
-        return &self.rotation;
+        &self.rotation
     }
 
     pub fn set_rotation(&mut self, rotation: &Vec4) {
@@ -56,7 +56,7 @@ impl<'a> Instance<'a> {
     }
 
     pub fn get_translation(&self) -> &Mat4 {
-        return &self.translation;
+        &self.translation
     }
 
     pub fn set_translation(&mut self, translation: &Vec4) {
@@ -69,7 +69,7 @@ impl<'a> Instance<'a> {
     }
 
     pub fn get_transform(&self) -> Mat4 {
-        return self.transformation;
+        self.transformation
     }
 }
 

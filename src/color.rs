@@ -37,9 +37,9 @@ impl std::ops::Mul<f32> for Color {
     }
 }
 
-impl Into<sdl2::pixels::Color> for Color {
-    fn into(self) -> sdl2::pixels::Color {
-        sdl2::pixels::Color::RGB(self.r, self.g, self.b)
+impl From<Color> for sdl2::pixels::Color {
+    fn from(val: Color) -> Self {
+        sdl2::pixels::Color::RGB(val.r, val.g, val.b)
     }
 }
 

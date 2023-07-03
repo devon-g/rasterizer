@@ -27,7 +27,7 @@ impl Renderer {
         }
     }
 
-    pub fn render_triangle(&mut self, triangle: &Triangle, projected: &Vec<Vec3>) {
+    pub fn render_triangle(&mut self, triangle: &Triangle, projected: &[Vec3]) {
         self.canvas.draw_wireframe_triangle(
             &projected[triangle.vertices[0] as usize],
             &projected[triangle.vertices[1] as usize],
