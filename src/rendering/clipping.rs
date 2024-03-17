@@ -1,3 +1,4 @@
+/*
 use super::viewport::Plane;
 use crate::{color, models::triangle::Triangle};
 
@@ -32,3 +33,4 @@ pub fn clip_triangle(triangle: Triangle, plane: Plane) -> &[Triangle] {
         todo!("Need triangle object to contain vertices");
     }
 }
+*/
