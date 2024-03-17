@@ -15,12 +15,12 @@ impl Plane {
     }
 
     pub fn signed_distance(&self, point: &Vec4) -> f32 {
-        return self.normal.dot(point) + self.d;
+        self.normal.dot(point) + self.d
     }
 
     pub fn intersection(&self, p0: &Vec4, p1: &Vec4) -> Vec4 {
         let t = (-self.d - self.normal.dot(p0)) / self.normal.dot(&(p1 - p0));
-        return p0 + t*(p1 - p0);
+        p0 + t * (p1 - p0)
     }
 }
 

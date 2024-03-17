@@ -22,8 +22,8 @@ impl Instance {
             model,
             scale: Mat4::new_nonuniform_scaling(&scale.xyz()),
             rotation: Mat4::new_rotation(-Vec3::z_axis().scale(rotation.z))
-            * Mat4::new_rotation(-Vec3::y_axis().scale(rotation.y))
-            * Mat4::new_rotation(-Vec3::x_axis().scale(rotation.x)),
+                * Mat4::new_rotation(-Vec3::y_axis().scale(rotation.y))
+                * Mat4::new_rotation(-Vec3::x_axis().scale(rotation.x)),
             translation: Mat4::new_translation(&translation.xyz()),
             transformation: Mat4::identity(),
         };
@@ -64,7 +64,7 @@ impl Instance {
         self.translation = Mat4::new_translation(&translation.xyz());
         self.generate_transform();
     }
-    
+
     pub fn generate_transform(&mut self) {
         self.transformation = self.translation * self.rotation * self.scale;
     }
