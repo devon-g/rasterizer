@@ -7,8 +7,8 @@ pub struct Scene {
 }
 
 impl Scene {
-    pub fn new() -> Scene {
-        Scene { instances: vec![] }
+    pub fn new() -> Self {
+        Self { instances: vec![] }
     }
 
     pub fn add_instance(&mut self, instance: Rc<RefCell<Instance>>) {

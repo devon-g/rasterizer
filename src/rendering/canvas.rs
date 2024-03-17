@@ -172,13 +172,7 @@ impl Canvas {
     }
 
     /// Draws wireframe triangle
-    pub fn draw_wireframe_triangle(
-        &mut self,
-        p0: &Vec3,
-        p1: &Vec3,
-        p2: &Vec3,
-        color: Color,
-    ) {
+    pub fn draw_wireframe_triangle(&mut self, p0: &Vec3, p1: &Vec3, p2: &Vec3, color: Color) {
         self.draw_line(p0, p1, color);
         self.draw_line(p1, p2, color);
         self.draw_line(p2, p0, color);
@@ -197,7 +191,7 @@ impl Canvas {
                 d = d + a;
             }
 
-            return values;
+            values
         }
     }
 
@@ -216,7 +210,10 @@ impl Canvas {
             }
             let ys = self.interpolate(p0.x, p0.y, p1.x, p1.y);
             for x in (p0.x as i32)..=(p1.x as i32) {
-                self.put_pixel(&Vec3::new(x as f32, ys[(x - p0.x as i32) as usize], 1.0), color);
+                self.put_pixel(
+                    &Vec3::new(x as f32, ys[(x - p0.x as i32) as usize], 1.0),
+                    color,
+                );
             }
         } else {
             // Compute x in terms of y so we can draw vertical lines
@@ -225,7 +222,10 @@ impl Canvas {
             }
             let xs = self.interpolate(p0.y, p0.x, p1.y, p1.x);
             for y in (p0.y as i32)..=(p1.y as i32) {
-                self.put_pixel(&Vec3::new(xs[(y - p0.y as i32) as usize], y as f32, 1.0), color);
+                self.put_pixel(
+                    &Vec3::new(xs[(y - p0.y as i32) as usize], y as f32, 1.0),
+                    color,
+                );
             }
         }
     }

@@ -11,20 +11,20 @@ pub struct Renderer {
 }
 
 impl Renderer {
-    pub fn new(canvas: Canvas, viewport: Viewport) -> Renderer {
-        Renderer { canvas, viewport }
+    pub fn new(canvas: Canvas, viewport: Viewport) -> Self {
+        Self { canvas, viewport }
     }
 
     pub fn render_object(&mut self, vertices: &Vec<Vec4>, triangles: &Vec<Triangle>) {
         let mut projected: Vec<Vec3> = Vec::new();
         // Convert all 3d points into 2d points
-        for vertex in vertices {
-            projected.push(self.viewport.project_vertex(vertex));
-        }
+        vertices
+            .iter()
+            .for_each(|vertex| projected.push(self.viewport.project_vertex(vertex)));
         // Render the triangles
-        for triangle in triangles {
-            self.render_triangle(triangle, &projected);
-        }
+        triangles
+            .iter()
+            .for_each(|triangle| self.render_triangle(triangle, &projected));
     }
 
     pub fn render_triangle(&mut self, triangle: &Triangle, projected: &Vec<Vec3>) {
@@ -47,15 +47,15 @@ impl Renderer {
         let mut projected: Vec<Vec3> = Vec::new();
         // Convert all 3d points into 2d points
         // TODO: Rebuild transform after converting to nalgebra glm
-        for i in 0..instance.get_model().vertices.len() {
+        instance.get_model().vertices.iter().for_each(|vertex| {
             projected.push(self.viewport.project_vertex(
-                &(self.viewport.get_transform()
-                    * instance.get_transform()
-                    * instance.get_model().vertices[i]),
-            ));
-        }
-        for i in 0..instance.get_model().triangles.len() {
-            self.render_triangle(&instance.get_model().triangles[i], &projected);
-        }
+                &(self.viewport.get_transform() * instance.get_transform() * vertex),
+            ))
+        });
+        instance
+            .get_model()
+            .triangles
+            .iter()
+            .for_each(|triangle| self.render_triangle(triangle, &projected));
     }
 }
